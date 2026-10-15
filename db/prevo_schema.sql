@@ -53,7 +53,7 @@ CREATE TABLE users (
     nim           VARCHAR(20)  UNIQUE NOT NULL,
     email         VARCHAR(100) UNIQUE NOT NULL,
     name          VARCHAR(100) NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
+    password      VARCHAR(255) NOT NULL,
     phone         VARCHAR(20),
     whatsapp      VARCHAR(20),
     instagram     VARCHAR(50),
