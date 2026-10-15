@@ -309,23 +309,18 @@ COMMENT ON FUNCTION trigger_sync_item_status IS
 -- 1. Create Booking (Atomic & Bebas Race Condition)
 CREATE OR REPLACE PROCEDURE create_booking(
     p_item_id      INT,
-    p_buyer_id     INT,
-    p_offer_price  DECIMAL(12,2)
+    p_buyer_id     INT
 )
 LANGUAGE plpgsql
 AS $$
 DECLARE
     v_seller_id    INT;
     v_status       item_status;
+    v_price        DECIMAL(12,2);
 BEGIN
-    -- Validasi nominal tawaran
-    IF p_offer_price IS NULL OR p_offer_price < 0 THEN
-        RAISE EXCEPTION 'Harga penawaran tidak valid.';
-    END IF;
-
     -- Kunci baris item untuk mencegah race condition (SELECT ... FOR UPDATE)
-    SELECT seller_id, status
-    INTO v_seller_id, v_status
+    SELECT seller_id, status, price
+    INTO v_seller_id, v_status, v_price
     FROM items
     WHERE id = p_item_id
     FOR UPDATE;
@@ -344,7 +339,7 @@ BEGIN
         RAISE EXCEPTION 'Penjual tidak dapat membooking barang miliknya sendiri.';
     END IF;
 
-    -- Insert transaksi baru (status 'pending', aktif selama 24 jam)
+    -- Insert transaksi baru (status 'pending', harga awal = harga listing, aktif selama 24 jam)
     INSERT INTO transactions (
         item_id,
         buyer_id,
@@ -357,7 +352,7 @@ BEGIN
         p_buyer_id,
         v_seller_id,
         'pending',
-        p_offer_price,
+        v_price,
         NOW() + INTERVAL '1 day'
     );
 
@@ -366,14 +361,114 @@ BEGIN
     SET status = 'booking'
     WHERE id = p_item_id;
 
-    RAISE NOTICE 'Booking berhasil dibuat untuk item ID % oleh pembeli ID %.', p_item_id, p_buyer_id;
+    RAISE NOTICE 'Booking berhasil dibuat untuk item ID % oleh pembeli ID % (Harga awal: %).', p_item_id, p_buyer_id, v_price;
 END;
 $$;
 
 COMMENT ON PROCEDURE create_booking IS
-    'Membuat transaksi booking secara atomic dengan row-level lock (FOR UPDATE)';
+    'Membuat transaksi booking secara atomic dengan row-level lock; harga awal mengambil harga listing barang';
 
--- 2. Complete Transaction (Dapat dipanggil oleh Buyer maupun Seller)
+-- 2. Update Booking Deal (Penjual memperbarui kesepakatan harga / lokasi / waktu COD setelah nego WA)
+CREATE OR REPLACE PROCEDURE update_booking_deal(
+    p_transaction_id  INT,
+    p_seller_id       INT,
+    p_agreed_price    DECIMAL(12,2),
+    p_meetup_location VARCHAR(150) DEFAULT NULL,
+    p_meetup_time     TIMESTAMPTZ  DEFAULT NULL
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_seller_id INT;
+    v_status    transaction_status;
+BEGIN
+    -- Validasi nominal harga kesepakatan
+    IF p_agreed_price IS NULL OR p_agreed_price < 0 THEN
+        RAISE EXCEPTION 'Harga kesepakatan tidak valid.';
+    END IF;
+
+    -- Ambil data transaksi
+    SELECT seller_id, status
+    INTO v_seller_id, v_status
+    FROM transactions
+    WHERE id = p_transaction_id;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Transaksi dengan ID % tidak ditemukan.', p_transaction_id;
+    END IF;
+
+    -- Validasi otorisasi: hanya penjual yang berhak mengubah kesepakatan transaksi
+    IF p_seller_id <> v_seller_id THEN
+        RAISE EXCEPTION 'Hanya penjual pemilik barang yang dapat memperbarui kesepakatan transaksi ini.';
+    END IF;
+
+    -- Validasi status transaksi
+    IF v_status <> 'pending' THEN
+        RAISE EXCEPTION 'Hanya transaksi berstatus pending yang dapat diperbarui (status saat ini: %).', v_status;
+    END IF;
+
+    -- Update detail transaksi
+    UPDATE transactions
+    SET agreed_price    = p_agreed_price,
+        meetup_location = COALESCE(p_meetup_location, meetup_location),
+        meetup_time     = COALESCE(p_meetup_time, meetup_time)
+    WHERE id = p_transaction_id;
+
+    RAISE NOTICE 'Transaksi % berhasil diperbarui: harga kesepakatan menjadi %.', p_transaction_id, p_agreed_price;
+END;
+$$;
+
+COMMENT ON PROCEDURE update_booking_deal IS
+    'Penjual memperbarui harga kesepakatan (hasil nego WA) dan informasi meetup COD';
+
+-- 3. Cancel Transaction (Dapat dibatalkan oleh Buyer maupun Seller jika nego gagal/batal)
+CREATE OR REPLACE PROCEDURE cancel_transaction(
+    p_transaction_id INT,
+    p_actor_id       INT,
+    p_reason         TEXT DEFAULT NULL
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_buyer_id   INT;
+    v_seller_id  INT;
+    v_status     transaction_status;
+BEGIN
+    -- Ambil data transaksi
+    SELECT buyer_id, seller_id, status
+    INTO v_buyer_id, v_seller_id, v_status
+    FROM transactions
+    WHERE id = p_transaction_id;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Transaksi dengan ID % tidak ditemukan.', p_transaction_id;
+    END IF;
+
+    -- Validasi otorisasi pemanggil
+    IF p_actor_id <> v_buyer_id AND p_actor_id <> v_seller_id THEN
+        RAISE EXCEPTION 'Anda tidak memiliki hak akses untuk membatalkan transaksi ini.';
+    END IF;
+
+    -- Validasi status transaksi
+    IF v_status <> 'pending' THEN
+        RAISE EXCEPTION 'Hanya transaksi berstatus pending yang dapat dibatalkan (status saat ini: %).', v_status;
+    END IF;
+
+    -- Update transaksi ke 'dibatalkan'
+    -- (Catatan: items.status otomatis dikembalikan ke 'tersedia' oleh trigger sync_item_status)
+    UPDATE transactions
+    SET status = 'dibatalkan'
+    WHERE id = p_transaction_id;
+
+    RAISE NOTICE 'Transaksi % berhasil dibatalkan oleh user ID %. Catatan: %',
+        p_transaction_id, p_actor_id, COALESCE(p_reason, 'Tanpa keterangan');
+END;
+$$;
+
+COMMENT ON PROCEDURE cancel_transaction IS
+    'Membatalkan transaksi pending oleh pembeli/penjual; status item otomatis kembali tersedia via trigger';
+
+-- 4. Complete Transaction (Dapat dipanggil oleh Buyer maupun Seller)
 CREATE OR REPLACE PROCEDURE complete_transaction(
     p_transaction_id INT,
     p_actor_id       INT
@@ -419,7 +514,7 @@ $$;
 COMMENT ON PROCEDURE complete_transaction IS
     'Konfirmasi COD selesai: dapat dieksekusi buyer atau seller; status item otomatis terjual via trigger';
 
--- 3. Release Expired Bookings (Rilis barang yang booking-nya kedaluwarsa)
+-- 5. Release Expired Bookings (Rilis barang yang booking-nya kedaluwarsa)
 CREATE OR REPLACE PROCEDURE release_expired_bookings()
 LANGUAGE plpgsql
 AS $$
