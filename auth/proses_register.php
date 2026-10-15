@@ -25,8 +25,10 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 } else {
     $email_parts = explode('@', $email);
     $domain = array_pop($email_parts);
+    
+    $domain = strtolower($domain);
 
-    $allowed_domains = ['polinema.ac.id'];
+    $allowed_domains = ['student.polinema.ac.id', 'polinema.ac.id'];
 
     if (!in_array($domain, $allowed_domains)) {
         $errors[] = "Maaf, pendaftaran hanya diperbolehkan menggunakan email kampus.";
