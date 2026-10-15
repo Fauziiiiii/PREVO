@@ -29,7 +29,7 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $allowed_domains = ['polinema.ac.id'];
 
     if (!in_array($domain, $allowed_domains)) {
-        $errors = "Maaf, pendaftaran hanya diperbolehkan menggunakan email kampus.";
+        $errors[] = "Maaf, pendaftaran hanya diperbolehkan menggunakan email kampus.";
     }
 }
 if ($nim === '') {
@@ -60,7 +60,7 @@ $stmt = $pdo->prepare(
     "INSERT INTO users(name, email, nim, password, role) VALUES (:name, :email, :nim, :password, 'mahasiswa')"
 );
 $stmt->execute([
-    'nama' => $name,
+    'name' => $name,
     'email' => $email,
     'nim' => $nim,
     'password' => password_hash($password, PASSWORD_DEFAULT),
