@@ -48,6 +48,15 @@ if (isset($_SESSION['user_id'])) {
             theme: {
                 extend: {
                     colors: {
+                        brand: {
+                            50: '#eef4ff',
+                            100: '#d9e6ff',
+                            500: '#2563eb',
+                            600: '#1d4ed8',
+                            700: '#1a56db',
+                            800: '#1e40af',
+                            900: '#172554',
+                        },
                         "tertiary-fixed-dim": "#4edea3",
                         "tertiary": "#006141",
                         "surface-tint": "#0051df",
@@ -114,6 +123,9 @@ if (isset($_SESSION['user_id'])) {
                         margin: "1rem",
                     },
                     fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+                        "jakarta-sans": ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+                        jakarta: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
                         "headline-xl": ["Plus Jakarta Sans", "sans-serif"],
                         "headline-lg": ["Plus Jakarta Sans", "sans-serif"],
                         "headline-md": ["Plus Jakarta Sans", "sans-serif"],
@@ -145,11 +157,19 @@ if (isset($_SESSION['user_id'])) {
         };
     </script>
     <style>
+        body {
+            font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
         .material-symbols-outlined {
             font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
             display: inline-block;
             vertical-align: middle;
             line-height: 1;
+        }
+
+        .bg-campus-overlay {
+            background: linear-gradient(180deg, rgba(29, 78, 216, 0.88) 0%, rgba(30, 58, 138, 0.94) 100%);
         }
 
         .custom-curved-bg {

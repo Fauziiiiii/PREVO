@@ -1,382 +1,286 @@
 <?php
-$page_title = "Daftar Akun Mahasiswa - PREVO Polinema";
+$page_title = "Daftar Akun Baru - PREVO Polinema";
+$body_class = "font-sans antialiased text-slate-800 bg-[#f8fafc] min-h-screen";
 require_once __DIR__ . '/../includes/auth/header.php';
 ?>
 
-    <!-- Main Content Container: Desktop Two-Column Split Screen -->
-    <main class="w-full flex-1 flex flex-col lg:flex-row relative">
-        <section class="lg:w-5/12 xl:w-1/2 bg-gradient-to-br from-surface-container-low via-surface-container to-surface-container-high p-6 md:p-10 lg:p-12 flex flex-col justify-between relative overflow-hidden border-r border-outline-variant/40">
-            <!-- Subtle Campus Background Motif -->
-            <div class="absolute -top-24 -left-24 w-96 h-96 bg-primary-fixed/40 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-secondary-fixed/30 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="flex min-h-screen w-full">
+        <!-- BEGIN: Left Column (Brand Hero & Visual) -->
+        <section
+            class="hidden lg:flex lg:w-[48%] xl:w-[46%] relative flex-col justify-between p-10 xl:p-14 text-white overflow-hidden"
+            data-purpose="hero-banner">
+            <!-- Background Image with Overlay -->
+            <div class="absolute inset-0 -z-20 overflow-hidden">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjec3hjGZbk1bZCuvjOVxvbnpJBIpxnBBt7Q6xK2nOfJhm0gBpO074BKZImo2G_uY2VOq_msiDdsf9DaxMm6hQdZoGa2FNXRrCCFjio6_07qjkiHmvTrz5IjOm5N7aBCtCuF4hFRD-6OPQa5YA9P4SnLZUhsxyVehD_XkJkW98O0RyOxk8I9XbPatX4Bye2v2dXS-mNytKhXvbufImvLUnqwqn3PYZTAdMV32GXUi3AWoptOBHoosQ3I5UzFFxx7NdF1Y"
+                    alt="Gedung Kampus Polinema"
+                    class="w-full h-full object-cover object-center scale-105 transition-transform duration-700">
+            </div>
+            <!-- Royal Blue Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-b from-[#1a56db]/80 via-[#1e40af]/75 to-[#0f172a]/85 -z-10 backdrop-blur-[0.5px]"></div>
 
-            <div class="relative z-10 space-y-6">
-                <!-- Header Afiliasi Kampus -->
-                <div class="flex items-center justify-between flex-wrap gap-3">
-                    <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-xl bg-surface-container-lowest shadow-sm p-1.5 flex items-center justify-center border border-outline-variant/50">
-                            <span class="material-symbols-outlined text-primary text-2xl" style="font-variation-settings: 'FILL' 1;">school</span>
-                        </div>
-                        <div>
-                            <div class="flex items-center gap-1.5">
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm tracking-wide">
-                                    AFILIASI RESMI KAMPUS
-                                </span>
-                            </div>
-                            <p class="font-label-lg text-label-lg text-on-surface font-bold tracking-tight">POLITEKNIK NEGERI MALANG</p>
-                        </div>
-                    </div>
-                    <div class="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-surface-container-lowest/80 backdrop-blur-sm rounded-full border border-outline-variant/60 shadow-xs">
-                        <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
-                        <span class="font-label-sm text-label-sm text-secondary font-medium">Jaringan Kampus Aktif</span>
-                    </div>
-                </div>
-
-                <!-- Kartu Gedung Kampus Polinema -->
-                <div class="relative rounded-2xl overflow-hidden shadow-sm border border-outline-variant/60 group bg-surface-container-lowest">
-                    <div class="relative h-64 sm:h-80 w-full overflow-hidden">
-                        <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-                            data-alt="Gedung Kampus Politeknik Negeri Malang"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbcuLlgBgzHeCVSjHTboO-_pO83gBPWwt5XMDUqprE_FJz700dWJZu9weyXRnAh45yT7jSvxrs4boenDeDWg9r85HUpQwYA2Nzgu2CIfCdf62WlWLNaaBg1VVWrQhIXuq-WnBKgwnDFhueKTRfkLPkyzjXckIlUtoxDUYEkqgkCi-0lBxQaaqAgSp0XZe8aDyUC2JtQW--XdKPZo3gBnfRnMuYFD6oD3-1tag8G6FO9vJVVzrUqy0LoQ" />
-                        <div class="absolute inset-0 bg-gradient-to-t from-on-surface/90 via-on-surface/30 to-transparent"></div>
-                        
-                        <!-- Floating Badge: Kawasan Terpadu -->
-                        <div class="absolute top-4 left-4 right-4 flex items-center justify-between gap-2">
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-lowest/90 backdrop-blur-md text-primary font-label-md text-label-md font-semibold shadow-sm border border-outline-variant/40">
-                                <span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">verified</span>
-                                Kawasan Terpadu Jual-Beli Terpercaya Mahasiswa Polinema
-                            </span>
-                        </div>
-
-                        <!-- Overlay Lokasi Kampus -->
-                        <div class="absolute bottom-4 left-4 right-4 text-surface-container-lowest">
-                            <div class="flex items-start gap-2 bg-inverse-surface/80 backdrop-blur-md p-3.5 rounded-xl border border-white/10">
-                                <span class="material-symbols-outlined text-secondary-container text-xl mt-0.5" style="font-variation-settings: 'FILL' 1;">location_on</span>
-                                <div>
-                                    <p class="font-label-md text-label-md font-bold text-white leading-snug">Kampus Utama Polinema</p>
-                                    <p class="font-body-sm text-body-sm text-inverse-on-surface/90">Jl. Soekarno Hatta No.9, Jatimulyo, Kec. Lowokwaru, Malang</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Badge Kutipan: Dari Mahasiswa, Untuk Mahasiswa -->
-                <div class="bg-surface-container-lowest/90 backdrop-blur-md p-5 rounded-2xl border border-outline-variant/60 shadow-sm relative">
-                    <div class="flex items-start gap-3.5">
-                        <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary flex-shrink-0">
-                            <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">handshake</span>
-                        </div>
-                        <div>
-                            <h3 class="font-headline-sm text-headline-sm text-primary tracking-tight">“Dari Mahasiswa, Untuk Mahasiswa”</h3>
-                            <p class="font-body-md text-body-md text-on-surface-variant mt-1">
-                                100% Khusus Civitas Academica Polinema aktif. Transaksi hemat, aman, dan dekat langsung di dalam lingkungan kampus tanpa was-was penipuan.
-                            </p>
-                        </div>
-                    </div>
+            <!-- Top Section: Platform Badge -->
+            <div class="relative z-10 pt-2">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 border border-white/20 backdrop-blur-md text-xs font-medium text-white shadow-sm">
+                    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+                    </svg>
+                    <span>Platform Resmi Civitas Polinema</span>
                 </div>
             </div>
 
-            <!-- 3 Chip Fitur Unggulan -->
-            <div class="relative z-10 pt-6 mt-6 border-t border-outline-variant/50">
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div class="flex items-center gap-2.5 p-3 rounded-xl bg-surface-container-lowest/80 border border-outline-variant/60">
-                        <span class="material-symbols-outlined text-primary text-xl" style="font-variation-settings: 'FILL' 1;">badge</span>
-                        <div>
-                            <p class="font-label-md text-label-md font-bold text-on-surface">Wajib NIM Aktif</p>
-                            <p class="font-body-sm text-body-sm text-on-surface-variant">Validasi kampus</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-2.5 p-3 rounded-xl bg-surface-container-lowest/80 border border-outline-variant/60">
-                        <span class="material-symbols-outlined text-secondary text-xl" style="font-variation-settings: 'FILL' 1;">pin_drop</span>
-                        <div>
-                            <p class="font-label-md text-label-md font-bold text-on-surface">COD Titik Kampus</p>
-                            <p class="font-body-sm text-body-sm text-on-surface-variant">Titik temu aman</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-2.5 p-3 rounded-xl bg-surface-container-lowest/80 border border-outline-variant/60">
-                        <span class="material-symbols-outlined text-primary-container text-xl" style="font-variation-settings: 'FILL' 1;">price_check</span>
-                        <div>
-                            <p class="font-label-md text-label-md font-bold text-on-surface">Bisa Nego Santai</p>
-                            <p class="font-body-sm text-body-sm text-on-surface-variant">Ramah kantong</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="lg:w-7/12 xl:w-1/2 bg-surface-container-lowest p-6 sm:p-10 md:p-12 lg:p-14 flex flex-col justify-center items-center">
-            <div class="w-full max-w-xl mx-auto space-y-6">
-                <!-- Header Brand PREVO -->
-                <div class="flex items-center justify-between gap-4">
-                    <div class="flex items-center gap-3">
-                        <a class="font-headline-lg text-headline-lg font-bold text-primary tracking-tight flex items-center gap-2" href="<?= BASE_URL; ?>home/index.php">
-                            <span class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-sm shadow-primary/20">
-                                <span class="material-symbols-outlined text-2xl" data-icon="shopping_bag">shopping_bag</span>
-                            </span>
-                            PREVO
-                        </a>
-                    </div>
-                    <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-container/30 border border-secondary text-secondary">
-                        <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">hub</span>
-                        <span class="font-label-md text-label-md font-semibold">Polinema Hub</span>
-                    </div>
-                </div>
-
-                <!-- Judul & Subjudul -->
-                <div>
-                    <h1 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface font-extrabold tracking-tight">
-                        Daftar Akun PREVO
-                    </h1>
-                    <p class="font-body-md text-body-md text-on-surface-variant mt-1.5 leading-relaxed">
-                        Bergabung dengan komunitas preloved mahasiswa Polinema. Jual beli buku kuliah, elektronik, dan kebutuhan kost aman sesama mahasiswa.
-                    </p>
-                </div>
-
-                <!-- Tab Switcher: Masuk vs Daftar (Daftar Aktif) -->
-                <div class="p-1 rounded-xl bg-surface-container-low border border-outline-variant/40 grid grid-cols-2 gap-1">
-                    <a class="py-2.5 px-4 text-center rounded-lg font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center gap-2"
-                        href="login.php">
-                        <span class="material-symbols-outlined text-base">login</span>
-                        Masuk
-                    </a>
-                    <button class="py-2.5 px-4 text-center rounded-lg bg-surface-container-lowest font-label-md text-label-md text-primary font-bold shadow-xs border border-outline-variant/30 flex items-center justify-center gap-2"
-                        type="button">
-                        <span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">how_to_reg</span>
-                        Daftar
-                    </button>
-                </div>
-
-                <!-- Flash Message Notification -->
-                <?php tampil_flash(); ?>
-
-                <!-- Box Informasi Keamanan Akun -->
-                <div class="p-3.5 rounded-xl bg-surface-container-low border border-primary/20 flex items-start gap-3">
-                    <span class="material-symbols-outlined text-primary text-xl flex-shrink-0 mt-0.5" style="font-variation-settings: 'FILL' 1;">shield_with_heart</span>
-                    <div class="text-on-surface font-body-sm text-body-sm">
-                        <span class="font-bold text-primary">Verifikasi Otomatis Mahasiswa:</span>
-                        Akun baru otomatis diverifikasi jika mendaftar menggunakan email kampus aktif (@student.polinema.ac.id).
-                    </div>
-                </div>
-
-                <!-- Form Registrasi Mahasiswa -->
-                <form action="proses_register.php" method="POST" class="space-y-4 text-left">
-                    <?= csrf_field(); ?>
-
-                    <!-- 1. Nama Lengkap -->
-                    <div class="space-y-1.5">
-                        <label class="block font-label-md text-label-md text-on-surface font-semibold" for="fullName">
-                            Nama Lengkap Sesuai KTM
-                        </label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-outline">
-                                <span class="material-symbols-outlined text-xl">person</span>
-                            </span>
-                            <input class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface placeholder:text-outline font-body-md text-body-md focus:border-primary focus:ring-2 focus:ring-primary-fixed outline-none transition"
-                                id="fullName" name="name" placeholder="cth: Muhammad Rizky Pratama" required type="text" />
-                        </div>
-                    </div>
-
-                    <!-- 2. NIM & Email Kampus Otomatis (Smart Input) -->
-                    <div class="space-y-1.5">
-                        <div class="flex items-center justify-between">
-                            <label class="block font-label-md text-label-md text-on-surface font-semibold" for="nimInput">
-                                Nomor Induk Mahasiswa (NIM)
-                            </label>
-                            <span class="font-label-sm text-label-sm text-secondary font-medium flex items-center gap-1">
-                                <span class="material-symbols-outlined text-xs" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                                Validasi Otomatis
-                            </span>
-                        </div>
-                        <div class="flex rounded-xl shadow-xs overflow-hidden border border-outline-variant focus-within:border-primary focus-within:ring-2 focus-within:ring-primary-fixed bg-surface-container-lowest transition">
-                            <span class="inline-flex items-center pl-3.5 text-outline pointer-events-none">
-                                <span class="material-symbols-outlined text-xl">badge</span>
-                            </span>
-                            <input class="w-full pl-2.5 pr-2 py-2.5 border-0 bg-transparent text-on-surface placeholder:text-outline font-body-md text-body-md focus:ring-0 outline-none"
-                                id="nimInput" name="nim" maxlength="14" pattern="[0-9]*" placeholder="254107020099" required type="text" />
-                            <span class="inline-flex items-center px-3 bg-surface-container text-on-surface-variant font-label-sm text-label-sm font-semibold border-l border-outline-variant/60 select-none">
-                                @student.polinema.ac.id
-                            </span>
-                        </div>
-                        <p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 pt-0.5">
-                            <span class="material-symbols-outlined text-xs text-primary">info</span>
-                            NIM otomatis terhubung dengan email resmi @student.polinema.ac.id untuk validasi akun.
-                        </p>
-                    </div>
-
-                    <!-- 3 & 4. Dropdown Jurusan & Program Studi -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                        <!-- Jurusan -->
-                        <div class="space-y-1.5">
-                            <label class="block font-label-md text-label-md text-on-surface font-semibold" for="departmentSelect">
-                                Jurusan
-                            </label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-outline">
-                                    <span class="material-symbols-outlined text-xl">apartment</span>
-                                </span>
-                                <select class="w-full pl-10 pr-9 py-2.5 rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface font-body-md text-body-md focus:border-primary focus:ring-2 focus:ring-primary-fixed outline-none transition appearance-none"
-                                    id="departmentSelect" name="department">
-                                    <option disabled selected value="">Pilih Jurusan...</option>
-                                    <option value="jti">Teknologi Informasi</option>
-                                    <option value="te">Teknik Elektro</option>
-                                    <option value="tm">Teknik Mesin</option>
-                                    <option value="ts">Teknik Sipil</option>
-                                    <option value="tk">Teknik Kimia</option>
-                                    <option value="ak">Akuntansi</option>
-                                    <option value="an">Administrasi Niaga</option>
-                                </select>
-                                <span class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-outline">
-                                    <span class="material-symbols-outlined text-lg">arrow_drop_down</span>
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Program Studi -->
-                        <div class="space-y-1.5">
-                            <label class="block font-label-md text-label-md text-on-surface font-semibold" for="prodiSelect">
-                                Program Studi
-                            </label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-outline">
-                                    <span class="material-symbols-outlined text-xl">category</span>
-                                </span>
-                                <select class="w-full pl-10 pr-9 py-2.5 rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface font-body-md text-body-md focus:border-primary focus:ring-2 focus:ring-primary-fixed outline-none transition appearance-none"
-                                    id="prodiSelect" name="study_program">
-                                    <option disabled selected value="">Pilih Program Studi...</option>
-                                    <option value="ti">D4 Teknik Informatika</option>
-                                    <option value="sib">D4 Sistem Informasi Bisnis</option>
-                                    <option value="mi">D3 Manajemen Informatika</option>
-                                    <option value="te">D4 Teknik Elektronika</option>
-                                    <option value="tt">D3 Teknik Telekomunikasi</option>
-                                    <option value="an">D4 Manajemen Pemasaran</option>
-                                    <option value="ak">D4 Akuntansi Manajemen</option>
-                                </select>
-                                <span class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-outline">
-                                    <span class="material-symbols-outlined text-lg">arrow_drop_down</span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 5. Nomor WhatsApp Aktif -->
-                    <div class="space-y-1.5">
-                        <label class="block font-label-md text-label-md text-on-surface font-semibold" for="waNumber">
-                            Nomor WhatsApp Aktif
-                        </label>
-                        <div class="flex rounded-xl shadow-xs overflow-hidden border border-outline-variant focus-within:border-primary focus-within:ring-2 focus-within:ring-primary-fixed bg-surface-container-lowest transition">
-                            <span class="inline-flex items-center px-3.5 bg-surface-container-low text-on-surface font-label-md text-label-md font-semibold border-r border-outline-variant/60 gap-1.5 select-none">
-                                <span>🇮🇩</span>
-                                <span>+62</span>
-                            </span>
-                            <input class="w-full pl-3 pr-4 py-2.5 border-0 bg-transparent text-on-surface placeholder:text-outline font-body-md text-body-md focus:ring-0 outline-none"
-                                id="waNumber" name="whatsapp" placeholder="81234567890" required type="tel" />
-                        </div>
-                        <p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 pt-0.5">
-                            <span class="material-symbols-outlined text-xs text-secondary">forum</span>
-                            Digunakan untuk konfirmasi COD &amp; notifikasi nego pembeli.
-                        </p>
-                    </div>
-
-                    <!-- 6 & 7. Password & Konfirmasi Password -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                        <!-- Password -->
-                        <div class="space-y-1.5">
-                            <div class="flex items-center justify-between">
-                                <label class="block font-label-md text-label-md text-on-surface font-semibold" for="passInput">
-                                    Password
-                                </label>
-                                <span class="font-label-sm text-label-sm text-secondary font-semibold">Min 6 Karakter</span>
-                            </div>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-outline">
-                                    <span class="material-symbols-outlined text-xl">lock</span>
-                                </span>
-                                <input class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface font-body-md text-body-md focus:border-primary focus:ring-2 focus:ring-primary-fixed outline-none transition"
-                                    id="passInput" name="password" placeholder="Minimal 6 karakter" required type="password" />
-                                <button class="absolute inset-y-0 right-0 pr-3 flex items-center text-outline hover:text-primary transition-colors toggle-password-btn"
-                                    data-target="passInput" type="button">
-                                    <span class="material-symbols-outlined text-xl">visibility</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Konfirmasi Password -->
-                        <div class="space-y-1.5">
-                            <label class="block font-label-md text-label-md text-on-surface font-semibold" for="confirmPass">
-                                Ulangi Password
-                            </label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-outline">
-                                    <span class="material-symbols-outlined text-xl">lock_reset</span>
-                                </span>
-                                <input class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface font-body-md text-body-md focus:border-primary focus:ring-2 focus:ring-primary-fixed outline-none transition"
-                                    id="confirmPass" name="password_confirmation" placeholder="Ulangi kata sandi" required type="password" />
-                                <button class="absolute inset-y-0 right-0 pr-3 flex items-center text-outline hover:text-primary transition-colors toggle-password-btn"
-                                    data-target="confirmPass" type="button">
-                                    <span class="material-symbols-outlined text-xl">visibility</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Checkbox Persetujuan Syarat -->
-                    <div class="pt-1">
-                        <label class="flex items-start gap-3 cursor-pointer select-none">
-                            <input checked class="mt-1 w-4 h-4 rounded text-primary focus:ring-primary border-outline-variant cursor-pointer"
-                                required type="checkbox" name="agree_terms" />
-                            <span class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
-                                Saya menyetujui <a class="text-primary font-semibold hover:underline" href="#">Syarat &amp; Ketentuan PREVO</a> serta bersedia mematuhi <a class="text-primary font-semibold hover:underline" href="#">Etika Transaksi Kampus Polinema</a>.
-                            </span>
-                        </label>
-                    </div>
-
-                    <!-- Tombol CTA Utama: Daftar Sekarang -->
-                    <div class="pt-2">
-                        <button class="w-full py-3 px-6 rounded-xl bg-primary hover:bg-primary-container active:scale-[0.99] text-on-primary font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-sm transition-all duration-150"
-                            type="submit">
-                            <span>Daftar Sekarang</span>
-                            <span class="material-symbols-outlined text-xl">arrow_forward</span>
-                        </button>
-                    </div>
-
-                    <!-- Navigasi Bawah: Sudah punya akun? -->
-                    <p class="text-center font-body-md text-body-md text-on-surface-variant pt-2">
-                        Sudah punya akun PREVO?
-                        <a class="text-primary font-bold hover:underline ml-1" href="login.php">Masuk</a>
-                    </p>
-                </form>
-            </div>
-        </section>
-    </main>
-
-    <!-- ================= FOOTER PERSISTEN (Shared Blueprint) ================= -->
-    <footer class="bg-surface-container-low border-t border-outline-variant">
-        <div class="w-full max-w-7xl mx-auto px-6 lg:px-8 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
-            <!-- Brand & Hak Cipta -->
-            <div class="space-y-1">
-                <p class="font-body-sm text-body-sm text-on-surface-variant">
-                    © <?= date('Y'); ?> PREVO Polinema. Marketplace Preloved Mahasiswa Terverifikasi Politeknik Negeri Malang.
+            <!-- Middle Section: Main Hero Title & Subtitle -->
+            <div class="relative z-10 mt-6 mb-auto max-w-xl">
+                <h1 class="text-4xl xl:text-[42px] leading-[1.2] font-bold tracking-tight text-white mb-5 [text-shadow:_0_2px_12px_rgba(0,0,0,0.5)]">
+                    Pusatnya Preloved<br>Mahasiswa Polinema.
+                </h1>
+                <p class="text-white/95 text-[15px] xl:text-base leading-relaxed max-w-lg font-medium [text-shadow:_0_1px_8px_rgba(0,0,0,0.4)]">
+                    Jual beli perlengkapan kuliah, laptop, modul praktikum, dan kebutuhan anak kost langsung sesama mahasiswa terverifikasi.
                 </p>
             </div>
 
-            <!-- Links Navigasi Footer -->
-            <nav class="flex flex-wrap items-center justify-center gap-y-2 gap-x-6">
-                <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">
-                    Panduan COD Kampus
+            <!-- Bottom Section: Feature Pills & Campus Address Footer -->
+            <div class="relative z-10 space-y-8">
+                <!-- Feature Chips -->
+                <div class="flex flex-wrap items-center gap-2.5 text-xs font-medium text-white/95">
+                    <!-- Chip 1 -->
+                    <div class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/15 border border-white/20 backdrop-blur-md">
+                        <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                        </svg>
+                        <span>Wajib NIM Aktif</span>
+                    </div>
+
+                    <!-- Chip 2 -->
+                    <div class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/15 border border-white/20 backdrop-blur-md">
+                        <svg class="w-3.5 h-3.5 text-sky-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                            <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                        </svg>
+                        <span>COD Titik Kampus</span>
+                    </div>
+
+                    <!-- Chip 3 -->
+                    <div class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/15 border border-white/20 backdrop-blur-md">
+                        <svg class="w-3.5 h-3.5 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                        </svg>
+                        <span>Bisa Nego Santai</span>
+                    </div>
+                </div>
+
+                <!-- Left Column Footer -->
+                <div class="flex items-center justify-between text-xs text-white/60 pt-4 border-t border-white/10">
+                    <span>Jl. Soekarno Hatta No.9, Malang</span>
+                    <span>PREVO Polinema</span>
+                </div>
+            </div>
+        </section>
+        <!-- END: Left Column -->
+
+        <!-- BEGIN: Right Column (Form Container) -->
+        <main
+            class="flex-1 flex flex-col justify-between items-center py-8 px-4 sm:px-6 md:px-10 lg:px-8 xl:px-12 overflow-y-auto custom-scroll"
+            data-purpose="registration-screen">
+            <!-- Top Bar: Logo & Beranda Navigation -->
+            <header class="w-full max-w-[540px] flex items-center justify-between mb-6 pt-2">
+                <!-- Logo & Brand Info -->
+                <a href="<?= BASE_URL; ?>home/index.php" class="flex items-center gap-3 group">
+                    <div class="w-11 h-11 bg-brand-600 group-hover:bg-brand-700 rounded-xl flex items-center justify-center text-white shadow-md shadow-brand-500/20 transition">
+                        <!-- Shopping Bag Icon -->
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900 tracking-tight leading-none mb-1">PREVO</h2>
+                        <p class="text-[12px] text-slate-500 font-normal">Polinema Preloved Hub</p>
+                    </div>
                 </a>
-                <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">
-                    Syarat &amp; Ketentuan
+
+                <!-- Home Button Link -->
+                <a class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition shadow-sm"
+                    href="<?= BASE_URL; ?>home/index.php">
+                    <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                    </svg>
+                    <span>Beranda</span>
                 </a>
-                <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">
-                    Kebijakan Privasi
-                </a>
-                <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">
-                    Pusat Bantuan Mahasiswa
-                </a>
-            </nav>
-        </div>
-    </footer>
+            </header>
+
+            <!-- Center Card: Form Container -->
+            <div class="w-full max-w-[540px] bg-white rounded-2xl border border-slate-200/90 shadow-[0_4px_25px_-5px_rgba(0,0,0,0.05)] p-6 sm:p-8"
+                data-purpose="form-card">
+                <!-- Tab Navigation Switcher -->
+                <div class="flex items-center border-b border-slate-100 mb-6">
+                    <!-- Masuk Tab (Inactive) -->
+                    <a class="flex items-center gap-2 py-3 px-4 text-xs font-semibold text-slate-500 hover:text-slate-800 transition"
+                        href="login.php">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                        </svg>
+                        <span>Masuk</span>
+                    </a>
+
+                    <!-- Daftar Akun Baru Tab (Active) -->
+                    <div class="flex items-center gap-2 py-3 px-4 text-xs font-semibold text-brand-600 border-b-2 border-brand-600 -mb-[1px]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                        </svg>
+                        <span>Daftar Akun Baru</span>
+                    </div>
+                </div>
+
+                <!-- Form Heading & Lead Text -->
+                <div class="mb-6">
+                    <h3 class="text-xl font-bold text-slate-900 tracking-tight mb-1.5">Daftar Akun Baru</h3>
+                    <p class="text-xs text-slate-500 leading-normal">
+                        Pusatnya Preloved Mahasiswa Polinema. Jual beli praktis sesama mahasiswa.
+                    </p>
+                </div>
+
+                <!-- Flash Notification (Error / Sukses) -->
+                <?php tampil_flash(); ?>
+
+                <!-- Main Form Elements -->
+                <form action="proses_register.php" class="space-y-4" method="POST" id="registerForm">
+                    <?= csrf_field(); ?>
+                    <input type="hidden" name="redirect_to" value="register2.php">
+
+                    <!-- Field 1: Nama Lengkap -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-800 mb-1.5" for="fullName">
+                            Nama Lengkap
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                                </svg>
+                            </div>
+                            <input class="block w-full pl-10 pr-3.5 py-2.5 bg-[#fbfcfd] border border-slate-200 rounded-lg text-xs placeholder-slate-400 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition"
+                                id="fullName" name="name" placeholder="Nama lengkap sesuai KTM" required type="text">
+                        </div>
+                    </div>
+
+                    <!-- Field 2: NIM / Email Kampus -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-800 mb-1.5" for="identifier">
+                            NIM / Email Kampus
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <!-- Identification / ID Card Icon -->
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                                </svg>
+                            </div>
+                            <input class="block w-full pl-10 pr-3.5 py-2.5 bg-[#fbfcfd] border border-slate-200 rounded-lg text-xs placeholder-slate-400 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition"
+                                id="identifier" name="nim" placeholder="cth: 2141720000 atau nama@student.polinema.ac.id" required type="text">
+                        </div>
+                        <p class="text-[11px] text-slate-400 mt-1">Otomatis diverifikasi dengan email resmi @student.polinema.ac.id</p>
+                    </div>
+
+                    <!-- Field 3: Nomor WhatsApp -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-800 mb-1.5" for="phone">
+                            Nomor WhatsApp
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <!-- Chat / Message Icon -->
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                                </svg>
+                            </div>
+                            <input class="block w-full pl-10 pr-3.5 py-2.5 bg-[#fbfcfd] border border-slate-200 rounded-lg text-xs placeholder-slate-400 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition"
+                                id="phone" name="whatsapp" placeholder="08xxxxxxxxxx (untuk koordinasi COD)" required type="tel">
+                        </div>
+                    </div>
+
+                    <!-- Field 4: Kata Sandi -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-800 mb-1.5" for="password">
+                            Kata Sandi
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <!-- Lock Icon -->
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                                </svg>
+                            </div>
+                            <input class="block w-full pl-10 pr-10 py-2.5 bg-[#fbfcfd] border border-slate-200 rounded-lg text-xs placeholder-slate-400 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition"
+                                id="password" name="password" placeholder="Minimal 6 karakter" required type="password">
+                            <button class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none toggle-password-btn"
+                                data-target="password" id="togglePasswordBtn" type="button">
+                                <!-- Eye Outline Icon -->
+                                <svg id="eyeIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                                    <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Terms Checkbox -->
+                    <div class="flex items-start pt-1.5 pb-1">
+                        <div class="flex items-center h-4">
+                            <input class="h-4 w-4 text-brand-600 focus:ring-brand-500 border-slate-300 rounded cursor-pointer"
+                                id="terms" name="terms" type="checkbox" required checked>
+                        </div>
+                        <label class="ml-2.5 text-xs text-slate-600 leading-snug cursor-pointer select-none" for="terms">
+                            Saya menyetujui <a class="font-bold text-brand-700 hover:underline" href="#">Ketentuan Komunitas</a> &amp; <a class="font-bold text-brand-700 hover:underline" href="#">Panduan COD Aman Polinema.</a>
+                        </label>
+                    </div>
+
+                    <!-- Submit CTA Button -->
+                    <div class="pt-2">
+                        <button class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-white bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-xs font-semibold shadow-md shadow-brand-600/25 transition duration-150"
+                            type="submit">
+                            <span>Daftar Akun PREVO</span>
+                            <svg class="w-3.5 h-3.5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Divider with Text -->
+                <div class="relative my-5">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-slate-200"></div>
+                    </div>
+                    <div class="relative flex justify-center text-[11px] leading-none">
+                        <span class="bg-white px-3 text-slate-400">atau</span>
+                    </div>
+                </div>
+
+                <!-- Google Mail Kampus SSO Button -->
+                <button class="w-full flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-sm transition duration-150"
+                    type="button">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"></path>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"></path>
+                    </svg>
+                    <span>Lanjutkan dengan Google Mail Kampus</span>
+                </button>
+
+                <!-- Login Switch Prompt Footer -->
+                <div class="mt-6 pt-5 border-t border-slate-100 text-center text-xs text-slate-600">
+                    Sudah punya akun PREVO?
+                    <a class="font-bold text-brand-600 hover:text-brand-700 ml-1" href="login.php">Masuk di sini</a>
+                </div>
+            </div>
+
+            <!-- Bottom System Footer -->
+            <footer class="w-full max-w-[540px] text-center text-[11px] text-slate-500 py-6" data-purpose="copyright-info">
+                <p>© <?= date('Y'); ?> PREVO Politeknik Negeri Malang · Bantuan · Privasi · Panduan COD</p>
+            </footer>
+        </main>
+        <!-- END: Right Column -->
+    </div>
 
 <?php
 require_once __DIR__ . '/../includes/auth/footer.php';

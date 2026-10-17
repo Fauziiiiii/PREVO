@@ -9,15 +9,25 @@ require_once __DIR__ . '/../includes/helpers.php';
 
 csrf_verify();
 
-$name     = trim($_POST['name'] ?? '');
-$nim      = trim($_POST['nim'] ?? '');
+$name     = trim($_POST['name'] ?? $_POST['fullName'] ?? '');
+$nimInput = trim($_POST['nim'] ?? $_POST['identifier'] ?? '');
 $email    = trim($_POST['email'] ?? '');
-$whatsapp = trim($_POST['whatsapp'] ?? '');
+$whatsapp = trim($_POST['whatsapp'] ?? $_POST['phone'] ?? '');
 $password = $_POST['password'] ?? '';
 $confirm  = $_POST['password_confirmation'] ?? '';
 
-if ($email === '' && $nim !== '') {
-    $email = $nim . '@student.polinema.ac.id';
+// Jika identifier berupa alamat email, pisahkan email dan NIM secara cerdas
+if (strpos($nimInput, '@') !== false) {
+    if ($email === '') {
+        $email = $nimInput;
+    }
+    $nimParts = explode('@', $nimInput);
+    $nim = preg_replace('/[^0-9]/', '', $nimParts[0]);
+} else {
+    $nim = $nimInput;
+    if ($email === '' && $nim !== '') {
+        $email = $nim . '@student.polinema.ac.id';
+    }
 }
 
 $errors = [];
@@ -64,9 +74,11 @@ if ($whatsapp !== '') {
     }
 }
 
+$redirectTo = $_POST['redirect_to'] ?? 'register.php';
+
 if (!empty($errors)) {
     set_flash('error', implode(' ', $errors));
-    header('Location: register.php');
+    header('Location: ' . $redirectTo);
     exit;
 }
 
@@ -80,7 +92,7 @@ try {
 
     if ($cek->fetch()) {
         set_flash('error', 'NIM atau Email kampus ini sudah terdaftar. Silakan login ke akun Anda.');
-        header('Location: register.php');
+        header('Location: ' . $redirectTo);
         exit;
     }
 
@@ -105,6 +117,6 @@ try {
 
 } catch (PDOException $e) {
     set_flash('error', 'Gagal mendaftarkan akun baru. Terjadi kesalahan pada database: ' . $e->getMessage());
-    header('Location: register.php');
+    header('Location: ' . $redirectTo);
     exit;
 }
