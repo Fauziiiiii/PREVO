@@ -111,9 +111,9 @@ require_once __DIR__ . '/../includes/auth/header.php';
             <div class="w-full max-w-[540px] bg-white rounded-2xl border border-slate-200/90 shadow-[0_4px_25px_-5px_rgba(0,0,0,0.05)] p-6 sm:p-8"
                 data-purpose="form-card">
                 <!-- Tab Navigation Switcher -->
-                <div class="flex items-center border-b border-slate-100 mb-6">
+                <div class="flex items-center border-b border-slate-200/80 mb-6 select-none">
                     <!-- Masuk Tab (Inactive) -->
-                    <a class="flex items-center gap-2 py-3 px-4 text-xs font-semibold text-slate-500 hover:text-slate-800 transition"
+                    <a class="flex items-center gap-2 py-3 px-4 text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-800 border-b-2 border-transparent -mb-[1px] hover:border-slate-300 transition-all"
                         href="login.php">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
@@ -122,7 +122,7 @@ require_once __DIR__ . '/../includes/auth/header.php';
                     </a>
 
                     <!-- Daftar Akun Baru Tab (Active) -->
-                    <div class="flex items-center gap-2 py-3 px-4 text-xs font-semibold text-brand-600 border-b-2 border-brand-600 -mb-[1px]">
+                    <div class="flex items-center gap-2 py-3 px-4 text-xs sm:text-sm font-semibold text-brand-600 border-b-2 border-brand-600 -mb-[1px]">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
                         </svg>
@@ -132,8 +132,8 @@ require_once __DIR__ . '/../includes/auth/header.php';
 
                 <!-- Form Heading & Lead Text -->
                 <div class="mb-6">
-                    <h3 class="text-xl font-bold text-slate-900 tracking-tight mb-1.5">Daftar Akun Baru</h3>
-                    <p class="text-xs text-slate-500 leading-normal">
+                    <h3 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mb-1.5">Daftar Akun Baru</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 leading-normal">
                         Pusatnya Preloved Mahasiswa Polinema. Jual beli praktis sesama mahasiswa.
                     </p>
                 </div>
@@ -193,7 +193,7 @@ require_once __DIR__ . '/../includes/auth/header.php';
                                 </svg>
                             </div>
                             <input class="block w-full pl-10 pr-3.5 py-2.5 bg-[#fbfcfd] border border-slate-200 rounded-lg text-xs placeholder-slate-400 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition"
-                                id="phone" name="whatsapp" placeholder="08xxxxxxxxxx (untuk koordinasi COD)" required type="tel">
+                                id="phone" name="whatsapp" placeholder="081xxxxxxxx" required type="tel">
                         </div>
                     </div>
 
@@ -246,17 +246,17 @@ require_once __DIR__ . '/../includes/auth/header.php';
                 </form>
 
                 <!-- Divider with Text -->
-                <div class="relative my-5">
+                <!-- <div class="relative my-5">
                     <div class="absolute inset-0 flex items-center">
                         <div class="w-full border-t border-slate-200"></div>
                     </div>
                     <div class="relative flex justify-center text-[11px] leading-none">
                         <span class="bg-white px-3 text-slate-400">atau</span>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Google Mail Kampus SSO Button -->
-                <button class="w-full flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-sm transition duration-150"
+                <!-- <button class="w-full flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-sm transition duration-150"
                     type="button">
                     <svg class="w-4 h-4" viewBox="0 0 24 24">
                         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
@@ -265,7 +265,7 @@ require_once __DIR__ . '/../includes/auth/header.php';
                         <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"></path>
                     </svg>
                     <span>Lanjutkan dengan Google Mail Kampus</span>
-                </button>
+                </button> -->
 
                 <!-- Login Switch Prompt Footer -->
                 <div class="mt-6 pt-5 border-t border-slate-100 text-center text-xs text-slate-600">

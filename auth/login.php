@@ -80,45 +80,62 @@ require_once __DIR__ . '/../includes/auth/header.php';
         <!-- RIGHT SIDE: Authentication Form Canvas -->
         <div class="w-full lg:w-7/12 xl:w-1/2 bg-surface-container-lowest px-6 py-10 lg:px-16 lg:py-14 flex flex-col justify-between items-center relative">
             <!-- Top Navigation & Brand Header -->
-            <div class="w-full max-w-md flex items-center justify-between">
-                <a class="font-headline-lg text-headline-lg font-bold text-primary tracking-tight flex items-center gap-2"
+            <div class="w-full max-w-md flex items-center justify-between pt-2 mb-4">
+                <a class="flex items-center gap-2.5 group"
                     href="<?= BASE_URL; ?>home/index.php">
-                    <span class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-sm shadow-primary/20">
-                        <span class="material-symbols-outlined text-2xl" data-icon="shopping_bag">shopping_bag</span>
-                    </span>
-                    PREVO
+                    <div class="w-10 h-10 rounded-xl bg-brand-600 group-hover:bg-brand-700 flex items-center justify-center text-white shadow-sm shadow-brand-500/20 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-base font-bold text-slate-900 tracking-tight leading-none mb-0.5">PREVO</h2>
+                        <p class="text-[11px] text-slate-500 font-normal">Polinema Preloved Hub</p>
+                    </div>
                 </a>
                 <div class="flex items-center gap-2">
-                    <span class="px-2.5 py-1 rounded-full bg-surface-container font-label-sm text-label-sm text-primary font-semibold flex items-center gap-1 border border-outline-variant/30">
+                    <!-- <span class="hidden sm:inline-flex px-2.5 py-1 rounded-full bg-surface-container font-label-sm text-label-sm text-primary font-semibold items-center gap-1 border border-outline-variant/30">
                         <span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed-dim animate-pulse"></span>
                         Polinema Hub
-                    </span>
+                    </span> -->
+                    <a class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition shadow-sm"
+                        href="<?= BASE_URL; ?>home/index.php">
+                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                        </svg>
+                        <span>Beranda</span>
+                    </a>
                 </div>
             </div>
 
             <!-- Center Authentication Box -->
-            <div class="w-full max-w-md my-auto py-8">
-                <div class="mb-8 text-center sm:text-left">
-                    <h1 class="font-headline-xl text-headline-xl text-on-surface mb-2 tracking-tight">
-                        Selamat Datang!
-                    </h1>
-                    <p class="font-body-md text-body-md text-on-surface-variant">
-                        Marketplace Preloved Mahasiswa Polinema. Temukan buku, alat praktikum, gadget, dan kosan di sekitarmu.
-                    </p>
+            <div class="w-full max-w-md my-auto py-6">
+                <!-- Tab Navigation Switcher -->
+                <div class="flex items-center border-b border-slate-200/80 mb-6 select-none">
+                    <!-- Masuk Tab (Active) -->
+                    <div class="flex items-center gap-2 py-3 px-4 text-xs sm:text-sm font-semibold text-brand-600 border-b-2 border-brand-600 -mb-[1px]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                        </svg>
+                        <span>Masuk</span>
+                    </div>
+
+                    <!-- Daftar Akun Baru Tab (Inactive) -->
+                    <a class="flex items-center gap-2 py-3 px-4 text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-800 border-b-2 border-transparent -mb-[1px] hover:border-slate-300 transition-all"
+                        href="register.php">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                        </svg>
+                        <span>Daftar Akun Baru</span>
+                    </a>
                 </div>
 
-                <!-- Segmented Tab: Masuk vs Daftar -->
-                <div class="w-full bg-surface-container-low p-1.5 rounded-xl flex items-center mb-6 border border-outline-variant/40">
-                    <a href="login.php"
-                        class="flex-1 py-2 rounded-lg font-label-md text-label-md text-center transition-all duration-150 bg-surface-container-lowest text-primary shadow-sm font-bold"
-                        id="tab-masuk">
-                        Masuk
-                    </a>
-                    <a href="register.php"
-                        class="flex-1 py-2 rounded-lg font-label-md text-label-md text-center text-on-surface-variant hover:text-primary transition-all duration-150"
-                        id="tab-daftar">
-                        Daftar
-                    </a>
+                <!-- Form Heading & Lead Text -->
+                <div class="mb-6">
+                    <h3 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mb-1.5">Selamat Datang Kembali!</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 leading-normal">
+                        Marketplace Preloved Mahasiswa Polinema. Masuk ke akun Anda untuk mulai bertransaksi.
+                    </p>
                 </div>
 
                 <!-- Flash Message Notification -->
@@ -188,23 +205,28 @@ require_once __DIR__ . '/../includes/auth/header.php';
                     </div>
 
                     <!-- Primary Submit Button -->
-                    <button class="w-full py-3.5 px-6 rounded-xl bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg font-bold shadow-sm hover:shadow-md active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-2"
+                    <button class="w-full py-3.5 px-6 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-label-lg text-label-lg font-bold shadow-sm shadow-brand-500/20 hover:shadow-md active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-2"
                         type="submit">
                         <span>Masuk ke PREVO</span>
-                        <span class="material-symbols-outlined text-lg" data-icon="arrow_forward">arrow_forward</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                        </svg>
                     </button>
                 </form>
 
                 <!-- Switch to Registration Footer Note -->
-                <p class="text-center font-body-md text-body-md text-on-surface-variant mt-6">
-                    Belum punya akun PREVO?
-                    <a class="font-label-md text-label-md text-primary font-bold hover:underline ml-1" href="register.php">
-                        Daftar Sekarang
-                    </a>
-                </p>
+                <div class="mt-6 text-center">
+                    <p class="text-xs sm:text-sm text-slate-500">
+                        Belum punya akun PREVO?
+                        <a class="font-semibold text-brand-600 hover:text-brand-700 hover:underline transition ml-1"
+                            href="register.php">
+                            Daftar di sini
+                        </a>
+                    </p>
+                </div>
 
                 <!-- Verification Banner (KTM Notice) -->
-                <div class="mt-6 p-3.5 rounded-xl bg-surface-container-low border border-secondary-container/40 flex items-start gap-3">
+                <!-- <div class="mt-6 p-3.5 rounded-xl bg-surface-container-low border border-secondary-container/40 flex items-start gap-3">
                     <span class="material-symbols-outlined text-secondary text-xl mt-0.5" data-icon="badge">badge</span>
                     <div>
                         <p class="font-label-md text-label-md text-on-surface">
@@ -214,7 +236,7 @@ require_once __DIR__ . '/../includes/auth/header.php';
                             Siapkan foto KTM fisik atau tangkapan layar Siakad aktif untuk membuka fitur pasang iklan &amp; transaksi.
                         </p>
                     </div>
-                </div>
+                </div> -->
             </div>
 
             <!-- Bottom Mini Footer -->
