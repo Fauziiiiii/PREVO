@@ -1,4 +1,15 @@
 <?php
+if (!defined('BASE_URL')) {
+    $projectRoot = str_replace('\\', '/', realpath(__DIR__ . '/..'));
+    $docRoot = str_replace('\\', '/', realpath($_SERVER['DOCUMENT_ROOT'] ?? ''));
+    if ($docRoot !== '' && strpos($projectRoot, $docRoot) === 0) {
+        $basePath = substr($projectRoot, strlen($docRoot));
+    } else {
+        $basePath = '';
+    }
+    define('BASE_URL', rtrim($basePath, '/') . '/');
+}
+
 function e($value)
 {
     return htmlspecialchars((string) ($value ?? ''), ENT_QUOTES, 'UTF-8');

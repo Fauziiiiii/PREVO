@@ -47,9 +47,9 @@ try {
 
         // Direct ke dashboard admin jika role admin, atau beranda jika mahasiswa
         if ($_SESSION['role'] === 'admin') {
-            header('Location: ../admin/index.php');
+            header('Location: ' . BASE_URL . 'admin/index.php');
         } else {
-            header('Location: ../home/index.php');
+            header('Location: ' . BASE_URL . 'home/index.php');
         }
         exit;
     }

@@ -4,18 +4,6 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once __DIR__ . '/helpers.php';
 
-// Menentukan BASE_URL secara dinamis agar link aset dan halaman selalu valid dari folder manapun
-if (!defined('BASE_URL')) {
-    $projectRoot = str_replace('\\', '/', realpath(__DIR__ . '/..'));
-    $docRoot = str_replace('\\', '/', realpath($_SERVER['DOCUMENT_ROOT'] ?? ''));
-    if ($docRoot !== '' && strpos($projectRoot, $docRoot) === 0) {
-        $basePath = substr($projectRoot, strlen($docRoot));
-    } else {
-        $basePath = '';
-    }
-    define('BASE_URL', rtrim($basePath, '/') . '/');
-}
-
 $isLoggedIn = isset($_SESSION['user_id']);
 $favoriteCount = 0;
 if ($isLoggedIn) {

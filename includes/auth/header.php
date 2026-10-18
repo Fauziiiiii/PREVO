@@ -6,18 +6,6 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/../helpers.php';
 require_once __DIR__ . '/../csrf.php';
 
-// Definisi BASE_URL dinamis agar link aset dan halaman selalu valid
-if (!defined('BASE_URL')) {
-    $projectRoot = str_replace('\\', '/', realpath(__DIR__ . '/../..'));
-    $docRoot = str_replace('\\', '/', realpath($_SERVER['DOCUMENT_ROOT'] ?? ''));
-    if ($docRoot !== '' && strpos($projectRoot, $docRoot) === 0) {
-        $basePath = substr($projectRoot, strlen($docRoot));
-    } else {
-        $basePath = '';
-    }
-    define('BASE_URL', rtrim($basePath, '/') . '/');
-}
-
 // Jika pengguna sudah login, redirect langsung ke halaman utama
 if (isset($_SESSION['user_id'])) {
     header('Location: ' . BASE_URL . 'home/index.php');
