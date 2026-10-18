@@ -5,29 +5,33 @@ function e($value)
 }
 
 // Format nominal angka ke format mata uang Rupiah
-function format_rupiah($nominal)
+function format_rupiah($amount)
 {
-    return 'Rp ' . number_format((float) $nominal, 0, ',', '.');
+    return 'Rp ' . number_format((float) $amount, 0, ',', '.');
 }
 
 // Set notifikasi flash session
-function set_flash($tipe, $pesan)
+function set_flash($type, $message)
 {
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
-    $_SESSION['flash'] = ['type' => $tipe, 'pesan' => $pesan];
+    $_SESSION['flash'] = [
+        'type'    => $type,
+        'message' => $message,
+        'pesan'   => $message // fallback untuk kompatibilitas
+    ];
 }
 
 // Tampilkan dan bersihkan notifikasi flash
-function tampil_flash()
+function display_flash()
 {
     if (isset($_SESSION['flash'])) {
         $flash = $_SESSION['flash'];
         unset($_SESSION['flash']);
 
-        $type = $flash['type'] ?? 'info';
-        $pesan = $flash['pesan'] ?? '';
+        $type    = $flash['type'] ?? 'info';
+        $message = $flash['message'] ?? ($flash['pesan'] ?? '');
 
         $colorClass = 'bg-surface-container-high text-on-surface border-outline-variant';
         if ($type === 'error' || $type === 'danger') {
@@ -37,8 +41,14 @@ function tampil_flash()
         }
 
         echo '<div class="p-4 mb-4 rounded-xl border text-body-md font-medium flex items-center justify-between ' . $colorClass . '">';
-        echo '<span>' . e($pesan) . '</span>';
+        echo '<span>' . e($message) . '</span>';
         echo '<button type="button" onclick="this.parentElement.remove()" class="text-lg leading-none px-2">&times;</button>';
         echo '</div>';
     }
+}
+
+// Alias bahasa Indonesia untuk kompatibilitas fungsi
+function tampil_flash()
+{
+    display_flash();
 }

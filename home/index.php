@@ -2,19 +2,19 @@
 $page_title = "Marketplace Preloved Mahasiswa Polinema";
 
 // Data Dummy Kategori Populer
-$kategoriList = [
-    ['nama' => 'Buku', 'icon' => 'menu_book', 'slug' => 'buku'],
-    ['nama' => 'Elektronik', 'icon' => 'devices', 'slug' => 'elektronik'],
-    ['nama' => 'Fashion', 'icon' => 'checkroom', 'slug' => 'fashion'],
-    ['nama' => 'Kos', 'icon' => 'single_bed', 'slug' => 'kos'],
-    ['nama' => 'Alat Kuliah', 'icon' => 'draw', 'slug' => 'alat-kuliah'],
-    ['nama' => 'Olahraga', 'icon' => 'sports_soccer', 'slug' => 'olahraga'],
-    ['nama' => 'Kesehatan', 'icon' => 'sanitizer', 'slug' => 'kesehatan'],
-    ['nama' => 'Lainnya', 'icon' => 'more_horiz', 'slug' => 'lainnya'],
+$popularCategories = [
+    ['name' => 'Buku', 'icon' => 'menu_book', 'slug' => 'buku'],
+    ['name' => 'Elektronik', 'icon' => 'devices', 'slug' => 'elektronik'],
+    ['name' => 'Fashion', 'icon' => 'checkroom', 'slug' => 'fashion'],
+    ['name' => 'Kos', 'icon' => 'single_bed', 'slug' => 'kos'],
+    ['name' => 'Alat Kuliah', 'icon' => 'draw', 'slug' => 'alat-kuliah'],
+    ['name' => 'Olahraga', 'icon' => 'sports_soccer', 'slug' => 'olahraga'],
+    ['name' => 'Kesehatan', 'icon' => 'sanitizer', 'slug' => 'kesehatan'],
+    ['name' => 'Lainnya', 'icon' => 'more_horiz', 'slug' => 'lainnya'],
 ];
 
 // Data Dummy Rekomendasi Barang
-$rekomendasiBarang = [
+$recommendedItems = [
     [
         'id' => 1,
         'title' => 'Laptop Asus Vivobook 14',
@@ -162,12 +162,12 @@ require_once __DIR__ . '/../includes/header.php';
       </div>
       <!-- Category Pills Grid (Generated via Loop) -->
       <div class="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-8 gap-3">
-        <?php foreach ($kategoriList as $kat): ?>
-          <a class="flex flex-col items-center p-3 rounded-2xl bg-surface-container-lowest border border-outline-variant hover:border-primary hover:shadow-md transition-all group text-center" href="<?= BASE_URL; ?>home/index.php?kategori=<?= urlencode($kat['slug']); ?>">
+        <?php foreach ($popularCategories as $category): ?>
+          <a class="flex flex-col items-center p-3 rounded-2xl bg-surface-container-lowest border border-outline-variant hover:border-primary hover:shadow-md transition-all group text-center" href="<?= BASE_URL; ?>home/index.php?kategori=<?= urlencode($category['slug']); ?>">
             <div class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors mb-2">
-              <span class="material-symbols-outlined text-[24px]"><?= e($kat['icon']); ?></span>
+              <span class="material-symbols-outlined text-[24px]"><?= e($category['icon']); ?></span>
             </div>
-            <span class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors"><?= e($kat['nama']); ?></span>
+            <span class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors"><?= e($category['name']); ?></span>
           </a>
         <?php endforeach; ?>
       </div>
@@ -181,14 +181,14 @@ require_once __DIR__ . '/../includes/header.php';
           <p class="font-body-sm text-body-sm text-on-surface-variant">Barang preloved terdekat dari gedung kuliah dan asrama Polinema</p>
         </div>
         <a class="text-primary text-label-md font-label-md flex items-center gap-1 hover:underline" href="#">
-          Lihat Semua (<?= count($rekomendasiBarang); ?>)
+          Lihat Semua (<?= count($recommendedItems); ?>)
           <span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward">arrow_forward</span>
         </a>
       </div>
 
       <!-- 5-Item Product Card Grid (Generated via Clean Reusable Card Pattern) -->
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        <?php foreach ($rekomendasiBarang as $item): ?>
+        <?php foreach ($recommendedItems as $item): ?>
           <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden hover:shadow-md transition-all flex flex-col group">
             <!-- Image Container -->
             <div class="relative w-full aspect-square overflow-hidden bg-surface-container-low">

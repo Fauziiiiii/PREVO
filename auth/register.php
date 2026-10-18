@@ -139,12 +139,12 @@ require_once __DIR__ . '/../includes/auth/header.php';
                 </div>
 
                 <!-- Flash Notification (Error / Sukses) -->
-                <?php tampil_flash(); ?>
+                <?php display_flash(); ?>
 
                 <!-- Main Form Elements -->
                 <form action="proses_register.php" class="space-y-4" method="POST" id="registerForm">
                     <?= csrf_field(); ?>
-                    <input type="hidden" name="redirect_to" value="register2.php">
+                    <input type="hidden" name="redirect_to" value="register.php">
 
                     <!-- Field 1: Nama Lengkap -->
                     <div>

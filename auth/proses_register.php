@@ -84,13 +84,13 @@ if (!empty($errors)) {
 
 try {
     // Cek Email atau NIM sudah terdaftar sebelumnya
-    $cek = $pdo->prepare("SELECT id FROM users WHERE email = :email OR nim = :nim LIMIT 1");
-    $cek->execute([
+    $userExistsStmt = $pdo->prepare("SELECT id FROM users WHERE email = :email OR nim = :nim LIMIT 1");
+    $userExistsStmt->execute([
         'email' => $email,
         'nim'   => $nim,
     ]);
 
-    if ($cek->fetch()) {
+    if ($userExistsStmt->fetch()) {
         set_flash('error', 'NIM atau Email kampus ini sudah terdaftar. Silakan login ke akun Anda.');
         header('Location: ' . $redirectTo);
         exit;

@@ -24,7 +24,8 @@ session_destroy();
 
 // Mulai sesi baru
 session_start();
-$_SESSION['flash'] = ['type' => 'info', 'pesan' => 'Anda telah berhasil keluar dari akun PREVO.'];
+require_once __DIR__ . '/../includes/helpers.php';
+set_flash('info', 'Anda telah berhasil keluar dari akun PREVO.');
 
 header('Location: login.php');
 exit;

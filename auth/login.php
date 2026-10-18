@@ -122,7 +122,7 @@ require_once __DIR__ . '/../includes/auth/header.php';
                 </div>
 
                 <!-- Flash Message Notification -->
-                <?php tampil_flash(); ?>
+                <?php display_flash(); ?>
 
                 <!-- LOGIN FORM -->
                 <form action="proses_login.php" method="POST" class="space-y-4" id="auth-form">
