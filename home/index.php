@@ -155,7 +155,7 @@ require_once __DIR__ . '/../includes/header.php';
     <section id="kategori" class="space-y-4">
       <div class="flex items-center justify-between">
         <h2 class="font-headline-md text-headline-md text-on-surface">Kategori Populer</h2>
-        <a class="text-primary text-label-md font-label-md flex items-center gap-0.5 hover:underline" href="#">
+        <a class="text-primary text-label-md font-label-md flex items-center gap-0.5 hover:underline" href="<?= BASE_URL; ?>barang/index.php">
           Lihat Semua
           <span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
         </a>
@@ -163,7 +163,7 @@ require_once __DIR__ . '/../includes/header.php';
       <!-- Category Pills Grid (Generated via Loop) -->
       <div class="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-8 gap-3">
         <?php foreach ($popularCategories as $category): ?>
-          <a class="flex flex-col items-center p-3 rounded-2xl bg-surface-container-lowest border border-outline-variant hover:border-primary hover:shadow-md transition-all group text-center" href="<?= BASE_URL; ?>home/index.php?kategori=<?= urlencode($category['slug']); ?>">
+          <a class="flex flex-col items-center p-3 rounded-2xl bg-surface-container-lowest border border-outline-variant hover:border-primary hover:shadow-md transition-all group text-center" href="<?= BASE_URL; ?>barang/index.php?kategori=<?= urlencode($category['slug']); ?>">
             <div class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors mb-2">
               <span class="material-symbols-outlined text-[24px]"><?= e($category['icon']); ?></span>
             </div>
@@ -180,7 +180,7 @@ require_once __DIR__ . '/../includes/header.php';
           <h2 class="font-headline-lg text-headline-lg text-on-surface">Rekomendasi Untuk Kamu</h2>
           <p class="font-body-sm text-body-sm text-on-surface-variant">Barang preloved terdekat dari gedung kuliah dan asrama Polinema</p>
         </div>
-        <a class="text-primary text-label-md font-label-md flex items-center gap-1 hover:underline" href="#">
+        <a class="text-primary text-label-md font-label-md flex items-center gap-1 hover:underline" href="<?= BASE_URL; ?>barang/index.php">
           Lihat Semua (<?= count($recommendedItems); ?>)
           <span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward">arrow_forward</span>
         </a>
@@ -192,7 +192,9 @@ require_once __DIR__ . '/../includes/header.php';
           <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden hover:shadow-md transition-all flex flex-col group">
             <!-- Image Container -->
             <div class="relative w-full aspect-square overflow-hidden bg-surface-container-low">
-              <img alt="<?= e($item['title']); ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="<?= e($item['image_url']); ?>">
+              <a href="<?= BASE_URL; ?>barang/detail.php?id=<?= $item['id']; ?>" class="block w-full h-full">
+                <img alt="<?= e($item['title']); ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="<?= e($item['image_url']); ?>">
+              </a>
               
               <!-- Nego Pill Badge (if applicable) -->
               <?php if (!empty($item['is_nego'])): ?>
@@ -213,7 +215,9 @@ require_once __DIR__ . '/../includes/header.php';
               <div>
                 <span class="text-label-sm font-label-sm text-outline uppercase tracking-wider"><?= e($item['category']); ?></span>
                 <h3 class="font-headline-md text-headline-md text-on-surface line-clamp-1 group-hover:text-primary transition-colors">
-                  <?= e($item['title']); ?>
+                  <a href="<?= BASE_URL; ?>barang/detail.php?id=<?= $item['id']; ?>">
+                    <?= e($item['title']); ?>
+                  </a>
                 </h3>
                 <p class="font-headline-md text-headline-md text-primary mt-1">
                   <?= format_rupiah($item['price']); ?>

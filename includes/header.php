@@ -3,6 +3,9 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require_once __DIR__ . '/helpers.php';
+if (file_exists(__DIR__ . '/csrf.php')) {
+    require_once __DIR__ . '/csrf.php';
+}
 
 $isLoggedIn = isset($_SESSION['user_id']);
 $favoriteCount = 0;
@@ -56,23 +59,23 @@ if ($isLoggedIn) {
           PREVO
         </a>
         <!-- Desktop Navigation Links -->
+        <?php
+        $reqUri = $_SERVER['REQUEST_URI'] ?? '';
+        $isJelajahActive = (isset($active_nav) && $active_nav === 'jelajah') || strpos($reqUri, '/barang/') !== false;
+        $isBerandaActive = !$isJelajahActive && ((isset($active_nav) && $active_nav === 'beranda') || strpos($reqUri, '/home/') !== false);
+        ?>
         <nav class="hidden md:flex items-center gap-6">
-          <a class="text-primary dark:text-primary font-label-lg text-label-lg border-b-2 border-primary pb-1" href="<?= BASE_URL; ?>home/index.php">Beranda</a>
-          <a class="text-on-surface-variant dark:text-on-surface-variant font-label-lg text-label-lg hover:text-primary transition-colors" href="<?= BASE_URL; ?>home/index.php#kategori">Jelajah</a>
+          <a class="<?= $isBerandaActive ? 'text-primary dark:text-primary font-label-lg text-label-lg border-b-2 border-primary pb-1' : 'text-on-surface-variant dark:text-on-surface-variant font-label-lg text-label-lg hover:text-primary transition-colors'; ?>" href="<?= BASE_URL; ?>home/index.php">Beranda</a>
+          <a class="<?= $isJelajahActive ? 'text-primary dark:text-primary font-label-lg text-label-lg border-b-2 border-primary pb-1' : 'text-on-surface-variant dark:text-on-surface-variant font-label-lg text-label-lg hover:text-primary transition-colors'; ?>" href="<?= BASE_URL; ?>barang/index.php">Jelajah</a>
           <a class="text-on-surface-variant dark:text-on-surface-variant font-label-lg text-label-lg hover:text-primary transition-colors" href="<?= BASE_URL; ?>home/index.php#bantuan">Bantuan</a>
         </nav>
       </div>
 
       <!-- Search Bar on Center/Right -->
       <div class="flex-1 max-w-md hidden lg:block">
-        <form method="GET" action="<?= BASE_URL; ?>home/index.php" class="relative flex items-center w-full">
+        <form method="GET" action="<?= BASE_URL; ?>barang/index.php" class="relative flex items-center w-full">
           <span class="material-symbols-outlined absolute left-3.5 text-outline text-[20px]" data-icon="search">search</span>
-          <input name="q" class="w-full pl-10 pr-28 py-2 bg-surface-container-low border border-outline-variant rounded-full text-on-surface placeholder:text-outline focus:outline-none focus:border-primary text-body-sm font-body-sm transition-all shadow-inner" placeholder="Cari barang, kategori, atau penjual..." type="text">
-          <button type="button" class="absolute right-1.5 px-3 py-1 bg-surface-container-lowest text-secondary text-label-sm font-label-sm rounded-full flex items-center gap-1 border border-outline-variant hover:bg-surface-container transition-colors">
-            <span class="material-symbols-outlined text-[14px]" data-icon="location_on">location_on</span>
-            <span>Kampus</span>
-            <span class="material-symbols-outlined text-[14px]" data-icon="arrow_drop_down">arrow_drop_down</span>
-          </button>
+          <input name="q" value="<?= isset($_GET['q']) ? e($_GET['q']) : ''; ?>" class="w-full pl-10 pr-28 py-2 bg-surface-container-low border border-outline-variant rounded-full text-on-surface placeholder:text-outline focus:outline-none focus:border-primary text-body-sm font-body-sm transition-all shadow-inner" placeholder="Cari barang, kategori, atau penjual..." type="text">
         </form>
       </div>
 
