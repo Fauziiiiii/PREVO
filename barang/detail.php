@@ -77,7 +77,7 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant shadow-sm">
             <div class="flex flex-col-reverse md:flex-row gap-4">
                 <!-- Thumbnails Column -->
-                <div class="flex md:flex-col gap-3 overflow-x-auto md:overflow-visible shrink-0 pb-1 md:pb-0">
+                <div class="flex md:flex-col gap-3 overflow-x-auto overflow-y-hidden md:overflow-visible [scrollbar-width:none] [&::-webkit-scrollbar]:hidden shrink-0 pb-1 md:pb-0">
                     <?php foreach ($item['images'] as $index => $imgUrl): ?>
                         <button
                             type="button"
@@ -119,25 +119,25 @@ require_once __DIR__ . '/../includes/header.php';
         <!-- Tabbed Information Panel (Spesifikasi, Deskripsi, Lokasi COD) -->
         <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant p-6 shadow-sm">
             <!-- Tab Navigation Bar -->
-            <div class="flex border-b border-outline-variant gap-8 mb-6 overflow-x-auto">
+            <div class="flex border-b border-outline-variant gap-6 sm:gap-8 mb-6 overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 <button
                     type="button"
                     onclick="switchTab('specs', this)"
-                    class="tab-btn text-primary font-label-lg text-label-lg border-b-2 border-primary pb-3 -mb-px flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+                    class="tab-btn text-primary border-primary font-label-lg text-label-lg border-b-2 pb-3 flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
                     <span class="material-symbols-outlined text-base" data-icon="tune">tune</span>
                     <span>Spesifikasi</span>
                 </button>
                 <button
                     type="button"
                     onclick="switchTab('desc', this)"
-                    class="tab-btn text-on-surface-variant hover:text-primary font-label-lg text-label-lg pb-3 transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+                    class="tab-btn text-on-surface-variant hover:text-primary border-transparent font-label-lg text-label-lg border-b-2 pb-3 transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
                     <span class="material-symbols-outlined text-base" data-icon="description">description</span>
                     <span>Deskripsi Lengkap</span>
                 </button>
                 <button
                     type="button"
                     onclick="switchTab('cod', this)"
-                    class="tab-btn text-on-surface-variant hover:text-primary font-label-lg text-label-lg pb-3 transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+                    class="tab-btn text-on-surface-variant hover:text-primary border-transparent font-label-lg text-label-lg border-b-2 pb-3 transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
                     <span class="material-symbols-outlined text-base" data-icon="location_on">location_on</span>
                     <span>Lokasi COD Kampus</span>
                 </button>
@@ -607,15 +607,15 @@ function openNegoModal(val) {
 function switchTab(tabKey, btnElement) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
     document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('text-primary', 'border-b-2', 'border-primary', '-mb-px');
-        btn.classList.add('text-on-surface-variant');
+        btn.classList.remove('text-primary', 'border-primary');
+        btn.classList.add('text-on-surface-variant', 'border-transparent');
     });
 
     const targetContent = document.getElementById('tab-' + tabKey);
     if (targetContent) targetContent.classList.remove('hidden');
 
-    btnElement.classList.remove('text-on-surface-variant');
-    btnElement.classList.add('text-primary', 'border-b-2', 'border-primary', '-mb-px');
+    btnElement.classList.remove('text-on-surface-variant', 'border-transparent');
+    btnElement.classList.add('text-primary', 'border-primary');
 }
 
 // Toggle Wishlist / Favorit
