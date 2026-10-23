@@ -29,7 +29,7 @@ EXCEPTION WHEN duplicate_object THEN null;
 END $$;
 
 DO $$ BEGIN
-    CREATE TYPE item_status AS ENUM ('tersedia', 'booking', 'terjual', 'dihapus');
+    CREATE TYPE item_status AS ENUM ('menunggu_persetujuan', 'tersedia', 'booking', 'terjual', 'ditolak', 'dihapus');
 EXCEPTION WHEN duplicate_object THEN null;
 END $$;
 
@@ -54,6 +54,8 @@ CREATE TABLE users (
     email         VARCHAR(100) UNIQUE NOT NULL,
     name          VARCHAR(100) NOT NULL,
     password      VARCHAR(255) NOT NULL,
+    jurusan       VARCHAR(100),
+    prodi         VARCHAR(100),
     phone         VARCHAR(20),
     whatsapp      VARCHAR(20),
     instagram     VARCHAR(50),
@@ -67,6 +69,8 @@ CREATE TABLE users (
 
 COMMENT ON TABLE  users IS 'Tabel pengguna: mahasiswa dan admin dalam 1 tabel dengan role-based access';
 COMMENT ON COLUMN users.nim IS 'NIM kampus sebagai identitas unik mahasiswa';
+COMMENT ON COLUMN users.jurusan IS 'Jurusan mahasiswa di Polinema (misal: Teknologi Informasi) — NULL untuk admin';
+COMMENT ON COLUMN users.prodi IS 'Program studi mahasiswa di Polinema (misal: D4 Teknik Informatika) — NULL untuk admin';
 COMMENT ON COLUMN users.whatsapp IS 'Nomor WA untuk tombol "Hubungi Penjual" → direct link WA';
 COMMENT ON COLUMN users.role IS 'mahasiswa = pengguna biasa, admin = moderator platform';
 
@@ -98,7 +102,10 @@ CREATE TABLE items (
     description   TEXT           NOT NULL,
     price         DECIMAL(12,2)  NOT NULL CHECK (price >= 0),
     condition     item_condition NOT NULL,
-    status        item_status    NOT NULL DEFAULT 'tersedia',
+    status           item_status    NOT NULL DEFAULT 'menunggu_persetujuan',
+    rejection_reason TEXT,
+    approved_by      INT            REFERENCES users(id) ON DELETE SET NULL,
+    approved_at      TIMESTAMPTZ,
     image_url     VARCHAR(255),
     location_info VARCHAR(100),
     created_at    TIMESTAMPTZ    NOT NULL DEFAULT NOW(),
@@ -107,7 +114,9 @@ CREATE TABLE items (
 
 COMMENT ON TABLE  items IS 'Listing barang preloved yang diposting oleh mahasiswa (penjual)';
 COMMENT ON COLUMN items.seller_id IS 'FK ke users — pemilik listing';
-COMMENT ON COLUMN items.status IS 'tersedia=bisa dibeli, booking=sedang negosiasi, terjual=sudah laku, dihapus=soft delete';
+COMMENT ON COLUMN items.status IS 'menunggu_persetujuan=antrean moderasi admin, tersedia=aktif/lolos kurasi, booking=proses transaksi, terjual=sukses COD, ditolak=tidak memenuhi syarat, dihapus=soft delete';
+COMMENT ON COLUMN items.rejection_reason IS 'Alasan penolakan listing oleh admin jika status ditolak';
+COMMENT ON COLUMN items.approved_by IS 'FK ke users (role admin) yang menyetujui listing barang';
 COMMENT ON COLUMN items.price IS 'Harga penawaran awal dalam Rupiah';
 
 -- ============================================================
