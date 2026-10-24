@@ -41,6 +41,8 @@ try {
         $_SESSION['name']    = $user['name'];
         $_SESSION['nim']     = $user['nim'] ?? '';
         $_SESSION['email']   = $user['email'] ?? '';
+        $_SESSION['jurusan'] = $user['jurusan'] ?? '';
+        $_SESSION['prodi']   = $user['prodi'] ?? '';
         $_SESSION['role']    = $user['role'] ?? 'mahasiswa';
 
         set_flash('success', 'Selamat datang kembali, ' . $user['name'] . '!');

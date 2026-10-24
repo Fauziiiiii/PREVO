@@ -14,6 +14,8 @@ $nimInput = trim($_POST['nim'] ?? $_POST['identifier'] ?? '');
 $email    = trim($_POST['email'] ?? '');
 $whatsapp = trim($_POST['whatsapp'] ?? $_POST['phone'] ?? '');
 $password = $_POST['password'] ?? '';
+$jurusan = $_POST['jurusan'] ?? '';
+$prodi = $_POST['prodi'] ?? '';
 $confirm  = $_POST['password_confirmation'] ?? '';
 
 // Jika identifier berupa alamat email, pisahkan email dan NIM secara cerdas
@@ -99,8 +101,8 @@ try {
     $passwordHash = password_hash($password, PASSWORD_BCRYPT);
 
     $stmt = $pdo->prepare(
-        "INSERT INTO users (name, email, nim, password, whatsapp, role, is_active) 
-         VALUES (:name, :email, :nim, :password, :whatsapp, 'mahasiswa', TRUE)"
+        "INSERT INTO users (name, email, nim, password, whatsapp, jurusan, prodi, role, is_active) 
+         VALUES (:name, :email, :nim, :password, :whatsapp, :jurusan, :prodi, 'mahasiswa', TRUE)"
     );
 
     $stmt->execute([
@@ -109,6 +111,8 @@ try {
         'nim'      => $nim,
         'password' => $passwordHash,
         'whatsapp' => $whatsapp !== '' ? $whatsapp : null,
+        'jurusan'  => $jurusan,
+        'prodi'    => $prodi,
     ]);
 
     set_flash('success', 'Registrasi berhasil! Silakan masuk menggunakan NIM atau Email kampus Anda.');
