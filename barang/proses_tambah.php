@@ -42,7 +42,7 @@ if (!in_array($condition, ['baru', 'bekas_baik', 'bekas_rusak'], true)) {
 }
 if ($image_url !== '') {
     $scheme = strtolower((string) parse_url($image_url, PHP_URL_SCHEME));
-    if (mb_strlen($image_url) > 255 || !filter_var($image_url, FILTER_VALIDATE_URL) || !in_array($scheme, ['http', 'https'], true)) {
+    if (!filter_var($image_url, FILTER_VALIDATE_URL) || !in_array($scheme, ['http', 'https'], true)) {
         $errors[] = 'URL gambar harus http/https yang valid (maks. 255 karakter).';
     }
 }
@@ -80,7 +80,7 @@ try {
         ':location_info' => $location_info !== '' ? $location_info : null,
     ]);
  
-    set_flash('success', 'Barang berhasil ditambahkan.');
+    set_flash('success', 'Barang berhasil diunggah dan sedang menunggu persetujuan Admin.');
     header('Location: kelola.php');
     exit;
 } catch (PDOException $e) {
