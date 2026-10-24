@@ -82,6 +82,7 @@ COMMENT ON COLUMN users.role IS 'mahasiswa = pengguna biasa, admin = moderator p
 CREATE TABLE categories (
     id          SERIAL PRIMARY KEY,
     name        VARCHAR(50)  UNIQUE NOT NULL,
+    slug        VARCHAR(100) NULL,
     description TEXT,
     icon        VARCHAR(50),
     created_at  TIMESTAMPTZ  NOT NULL DEFAULT NOW()
