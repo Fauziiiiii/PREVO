@@ -61,7 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $pageTitle = 'Beri Ulasan Penjual - PREVO';
 include __DIR__ . '/../views/partials/header.php';
-include __DIR__ . '/../views/partials/navbar.php';
 ?>
 
 <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -81,7 +80,12 @@ include __DIR__ . '/../views/partials/navbar.php';
         <div class="p-6">
             <!-- Info Transaksi -->
             <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200 mb-6">
-                <img src="<?= asset_url('uploads/items/' . ($tx['item_image'] ?: 'default.jpg')) ?>" 
+                <?php 
+                    $imgFile = $tx['item_image'] ?: 'default.jpg';
+                    $hasImg = file_exists(ROOT_PATH . '/uploads/items/' . $imgFile);
+                    $imgUrl = $hasImg ? asset_url('uploads/items/' . $imgFile) : asset_url('uploads/items/default.jpg');
+                ?>
+                <img src="<?= $imgUrl ?>" 
                      alt="<?= e($tx['item_title']) ?>" 
                      class="w-16 h-16 object-cover rounded-lg bg-slate-200 shrink-0">
                 <div class="min-w-0 flex-1">

@@ -43,7 +43,6 @@ $pendingList = $adminService->getPendingItems();
 
 $pageTitle = 'Moderasi Listing Barang - PREVO';
 include __DIR__ . '/../views/partials/header.php';
-include __DIR__ . '/../views/partials/navbar.php';
 ?>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -84,7 +83,12 @@ include __DIR__ . '/../views/partials/navbar.php';
                     <div class="p-5 sm:p-6 flex flex-col lg:flex-row gap-6">
                         <!-- Foto Barang -->
                         <div class="w-full lg:w-56 h-56 shrink-0 rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
-                            <img src="<?= asset_url('uploads/items/' . ($item['image_url'] ?: 'default.jpg')) ?>" 
+                            <?php 
+                                $imgFile = $item['image_url'] ?: 'default.jpg';
+                                $hasImg = file_exists(ROOT_PATH . '/uploads/items/' . $imgFile);
+                                $imgUrl = $hasImg ? asset_url('uploads/items/' . $imgFile) : asset_url('uploads/items/default.jpg');
+                            ?>
+                            <img src="<?= $imgUrl ?>" 
                                  alt="<?= e($item['title']) ?>" 
                                  class="w-full h-full object-cover">
                         </div>

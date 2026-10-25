@@ -21,7 +21,6 @@ $sellingList = $transactions['selling'];
 
 $pageTitle = 'Riwayat Transaksi COD - PREVO';
 include __DIR__ . '/../views/partials/header.php';
-include __DIR__ . '/../views/partials/navbar.php';
 ?>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -81,7 +80,12 @@ include __DIR__ . '/../views/partials/navbar.php';
                         <div class="p-5 sm:p-6 flex flex-col md:flex-row gap-5">
                             <!-- Item Image -->
                             <div class="w-full md:w-36 h-36 shrink-0 rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
-                                <img src="<?= asset_url('uploads/items/' . ($tx['item_image'] ?: 'default.jpg')) ?>" 
+                                <?php 
+                                    $imgFile = $tx['item_image'] ?: 'default.jpg';
+                                    $hasImg = file_exists(ROOT_PATH . '/uploads/items/' . $imgFile);
+                                    $imgUrl = $hasImg ? asset_url('uploads/items/' . $imgFile) : asset_url('uploads/items/default.jpg');
+                                ?>
+                                <img src="<?= $imgUrl ?>" 
                                      alt="<?= e($tx['item_title']) ?>" 
                                      class="w-full h-full object-cover">
                             </div>
@@ -252,7 +256,12 @@ include __DIR__ . '/../views/partials/navbar.php';
                         <div class="p-5 sm:p-6 flex flex-col md:flex-row gap-5">
                             <!-- Item Image -->
                             <div class="w-full md:w-36 h-36 shrink-0 rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
-                                <img src="<?= asset_url('uploads/items/' . ($tx['item_image'] ?: 'default.jpg')) ?>" 
+                                <?php 
+                                    $imgFile = $tx['item_image'] ?: 'default.jpg';
+                                    $hasImg = file_exists(ROOT_PATH . '/uploads/items/' . $imgFile);
+                                    $imgUrl = $hasImg ? asset_url('uploads/items/' . $imgFile) : asset_url('uploads/items/default.jpg');
+                                ?>
+                                <img src="<?= $imgUrl ?>" 
                                      alt="<?= e($tx['item_title']) ?>" 
                                      class="w-full h-full object-cover">
                             </div>
