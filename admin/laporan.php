@@ -22,8 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($reportId > 0) {
         if ($action === 'takedown') {
-            // Takedown item and mark report selesai
-            $res = $adminService->handleReport($reportId, (int)$user['id'], 'selesai', $adminNote, true);
+            // Takedown item and mark report ditangani
+            $res = $adminService->handleReport($reportId, (int)$user['id'], 'ditangani', $adminNote, true);
             if ($res['success']) {
                 set_flash('success', 'Laporan berhasil ditindaklanjuti dan barang telah di-takedown dari katalog.');
             } else {
@@ -37,20 +37,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 set_flash('error', $res['error'] ?? 'Gagal memproses laporan.');
             }
-        } elseif ($action === 'review') {
-            $res = $adminService->handleReport($reportId, (int)$user['id'], 'ditinjau', $adminNote, false);
-            if ($res['success']) {
-                set_flash('info', 'Status laporan diubah menjadi Dalam Peninjauan.');
-            } else {
-                set_flash('error', $res['error'] ?? 'Gagal memproses laporan.');
-            }
         }
     }
 
     redirect(BASE_URL . '/admin/laporan.php');
 }
 
-$statusFilter = in_array($_GET['status'] ?? '', ['menunggu', 'ditinjau', 'selesai', 'ditolak']) ? $_GET['status'] : null;
+$statusFilter = in_array($_GET['status'] ?? '', ['pending', 'ditangani', 'ditolak']) ? $_GET['status'] : null;
 $reports = $adminService->getReports($statusFilter);
 
 $pageTitle = 'Laporan Pelanggaran Komunitas - PREVO';
@@ -76,17 +69,13 @@ include __DIR__ . '/../views/partials/navbar.php';
            class="px-4 py-2 rounded-xl text-xs font-semibold transition-colors <?= !$statusFilter ? 'bg-blue-950 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' ?>">
             Semua Laporan
         </a>
-        <a href="<?= BASE_URL ?>/admin/laporan.php?status=menunggu" 
-           class="px-4 py-2 rounded-xl text-xs font-semibold transition-colors <?= $statusFilter === 'menunggu' ? 'bg-amber-500 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' ?>">
+        <a href="<?= BASE_URL ?>/admin/laporan.php?status=pending" 
+           class="px-4 py-2 rounded-xl text-xs font-semibold transition-colors <?= $statusFilter === 'pending' ? 'bg-amber-500 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' ?>">
             Menunggu Tindakan
         </a>
-        <a href="<?= BASE_URL ?>/admin/laporan.php?status=ditinjau" 
-           class="px-4 py-2 rounded-xl text-xs font-semibold transition-colors <?= $statusFilter === 'ditinjau' ? 'bg-blue-600 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' ?>">
-            Sedang Ditinjau
-        </a>
-        <a href="<?= BASE_URL ?>/admin/laporan.php?status=selesai" 
-           class="px-4 py-2 rounded-xl text-xs font-semibold transition-colors <?= $statusFilter === 'selesai' ? 'bg-emerald-600 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' ?>">
-            Selesai (Ditindak)
+        <a href="<?= BASE_URL ?>/admin/laporan.php?status=ditangani" 
+           class="px-4 py-2 rounded-xl text-xs font-semibold transition-colors <?= $statusFilter === 'ditangani' ? 'bg-emerald-600 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' ?>">
+            Telah Ditangani
         </a>
         <a href="<?= BASE_URL ?>/admin/laporan.php?status=ditolak" 
            class="px-4 py-2 rounded-xl text-xs font-semibold transition-colors <?= $statusFilter === 'ditolak' ? 'bg-slate-700 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' ?>">
@@ -134,17 +123,13 @@ include __DIR__ . '/../views/partials/navbar.php';
 
                                     <!-- Status Laporan -->
                                     <div>
-                                        <?php if ($rep['status'] === 'menunggu'): ?>
+                                        <?php if ($rep['status'] === 'pending'): ?>
                                             <span class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
                                                 Menunggu Tindakan
                                             </span>
-                                        <?php elseif ($rep['status'] === 'ditinjau'): ?>
-                                            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-800 border border-blue-200">
-                                                Sedang Ditinjau
-                                            </span>
-                                        <?php elseif ($rep['status'] === 'selesai'): ?>
+                                        <?php elseif ($rep['status'] === 'ditangani'): ?>
                                             <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
-                                                Ditindaklanjuti (Selesai)
+                                                Telah Ditangani
                                             </span>
                                         <?php else: ?>
                                             <span class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200">
@@ -177,11 +162,17 @@ include __DIR__ . '/../views/partials/navbar.php';
                                         <span class="text-slate-400">Penjual Terlapor:</span> 
                                         <span class="font-semibold text-slate-800"><?= e($rep['seller_name']) ?></span> (NIM <?= e($rep['seller_nim']) ?>)
                                     </div>
+                                    <?php if (!empty($rep['handler_name'])): ?>
+                                        <div>
+                                            <span class="text-slate-400">Ditangani oleh:</span> 
+                                            <span class="font-semibold text-slate-700"><?= e($rep['handler_name']) ?></span>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
 
                             <!-- Actions Admin -->
-                            <?php if ($rep['status'] === 'menunggu' || $rep['status'] === 'ditinjau'): ?>
+                            <?php if ($rep['status'] === 'pending'): ?>
                                 <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-end gap-2">
                                     <!-- Abaikan Laporan -->
                                     <form action="<?= BASE_URL ?>/admin/laporan.php" method="POST" onsubmit="return confirm('Tolak/abaikan laporan ini karena tidak melanggar ketentuan?')">
@@ -194,7 +185,7 @@ include __DIR__ . '/../views/partials/navbar.php';
                                     </form>
 
                                     <!-- Takedown Barang & Selesaikan -->
-                                    <form action="<?= BASE_URL ?>/admin/laporan.php" method="POST" onsubmit="return confirm('Takedown barang ini dari katalog dan tandai laporan selesai?')">
+                                    <form action="<?= BASE_URL ?>/admin/laporan.php" method="POST" onsubmit="return confirm('Takedown barang ini dari katalog dan tandai laporan telah ditangani?')">
                                         <?= csrf_field() ?>
                                         <input type="hidden" name="report_id" value="<?= $rep['id'] ?>">
                                         <input type="hidden" name="action" value="takedown">

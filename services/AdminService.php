@@ -29,8 +29,8 @@ class AdminService {
         // Transaksi Selesai & Total Volume COD
         $txStats = $this->db->query("SELECT COUNT(*) AS total_selesai, COALESCE(SUM(agreed_price), 0) AS total_volume FROM transactions WHERE status = 'selesai'")->fetch();
 
-        // Total Laporan Menunggu Ditindak
-        $pendingReports = (int)$this->db->query("SELECT COUNT(*) FROM reports WHERE status = 'menunggu'")->fetchColumn();
+        // Total Laporan Menunggu Ditindak (Status enum: 'pending')
+        $pendingReports = (int)$this->db->query("SELECT COUNT(*) FROM reports WHERE status = 'pending'")->fetchColumn();
 
         // Ringkasan Aktivitas Bulanan (View: monthly_summary)
         $monthly = $this->db->query("SELECT * FROM monthly_summary LIMIT 12")->fetchAll();
@@ -143,14 +143,14 @@ class AdminService {
                        reporter.nim AS reporter_nim,
                        seller.name AS seller_name,
                        seller.nim AS seller_nim,
-                       admin.name AS resolver_name
+                       admin.name AS handler_name
                 FROM reports r
                 JOIN items i ON i.id = r.item_id
                 JOIN users reporter ON reporter.id = r.reporter_id
                 JOIN users seller ON seller.id = i.seller_id
-                LEFT JOIN users admin ON admin.id = r.resolved_by";
+                LEFT JOIN users admin ON admin.id = r.handled_by";
 
-        if ($statusFilter && in_array($statusFilter, ['menunggu', 'ditinjau', 'selesai', 'ditolak'])) {
+        if ($statusFilter && in_array($statusFilter, ['pending', 'ditangani', 'ditolak'])) {
             $sql .= " WHERE r.status = " . $this->db->quote($statusFilter);
         }
 
@@ -162,7 +162,7 @@ class AdminService {
      * Menangani laporan pelanggaran
      */
     public function handleReport(int $reportId, int $adminId, string $newStatus, ?string $adminNote, bool $takedownItem = false): array {
-        if (!in_array($newStatus, ['ditinjau', 'selesai', 'ditolak'])) {
+        if (!in_array($newStatus, ['ditangani', 'ditolak'])) {
             return ['success' => false, 'error' => 'Status laporan tidak valid.'];
         }
 
@@ -182,12 +182,15 @@ class AdminService {
             // Update laporan
             $updateReport = $this->db->prepare("UPDATE reports 
                                                 SET status = :status, 
-                                                    resolved_by = :admin_id, 
-                                                    resolved_at = NOW() 
+                                                    handled_by = :admin_id, 
+                                                    admin_note = :note,
+                                                    handled_at = NOW(),
+                                                    updated_at = NOW() 
                                                 WHERE id = :id");
             $updateReport->execute([
                 'status'   => $newStatus,
                 'admin_id' => $adminId,
+                'note'     => $adminNote ?: null,
                 'id'       => $reportId
             ]);
 
