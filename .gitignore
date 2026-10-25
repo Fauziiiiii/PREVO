@@ -1,0 +1,19 @@
+# OS & IDE
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/
+
+# Local Environment & Secrets
+.env
+.env.local
+
+# Temp runtime directories
+.superpowers/
+.agents/
+
+# Uploads (Keep folder and default placeholder)
+uploads/items/*
+!uploads/items/default.jpg
+!uploads/items/.gitkeep
