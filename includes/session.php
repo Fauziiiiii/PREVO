@@ -39,8 +39,9 @@ function is_whatsapp_verified(): bool {
 
 /**
  * Penjaga otorisasi halaman (Auth Guard)
+ * Memvalidasi sesi login, role, verifikasi nomor WhatsApp, dan mengembalikan data user sesi
  */
-function auth_guard(?string $requiredRole = null, bool $requireVerifiedWa = false): void {
+function auth_guard(?string $requiredRole = null, bool $requireVerifiedWa = false): array {
     if (!is_logged_in()) {
         set_flash('error', 'Silakan login terlebih dahulu untuk mengakses halaman ini.');
         $currentUrl = $_SERVER['REQUEST_URI'] ?? '';
@@ -61,6 +62,8 @@ function auth_guard(?string $requiredRole = null, bool $requireVerifiedWa = fals
         header("Location: " . BASE_URL . "/auth/verifikasi_wa.php");
         exit;
     }
+
+    return $_SESSION['user'];
 }
 
 /**
