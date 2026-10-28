@@ -82,7 +82,7 @@ echo "\n====================================================\n";
 echo "            RINGKASAN DATA TERIMPOR                 \n";
 echo "====================================================\n";
 
-$tables = ['users', 'categories', 'items', 'transactions', 'reviews', 'reports', 'favorites'];
+$tables = ['users', 'categories', 'cod_locations', 'items', 'transactions', 'reviews', 'reports', 'favorites'];
 foreach ($tables as $t) {
     try {
         $cnt = $db->query("SELECT COUNT(*) FROM {$t}")->fetchColumn();

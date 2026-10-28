@@ -9,9 +9,12 @@ require_once __DIR__ . '/../includes/session.php';
 require_once __DIR__ . '/../includes/security.php';
 require_once __DIR__ . '/../includes/helpers.php';
 require_once __DIR__ . '/../services/TransactionService.php';
+require_once __DIR__ . '/../services/ItemService.php';
 
 $user = auth_guard('mahasiswa', true);
 $txService = new TransactionService();
+$itemService = new ItemService();
+$codLocations = $itemService->getActiveLocations();
 
 $tab = in_array($_GET['tab'] ?? '', ['buying', 'selling']) ? $_GET['tab'] : 'buying';
 
@@ -416,9 +419,34 @@ include __DIR__ . '/../views/partials/header.php';
                                             <p class="text-[11px] text-slate-400 mt-1">Ubah jika pembeli menawar via WhatsApp.</p>
                                         </div>
 
+                                        <?php $parsedDealLoc = parse_lokasi_cod($tx['meetup_location'] ?? ''); ?>
+
                                         <div>
-                                            <label class="block text-xs font-semibold text-slate-700 mb-1">Lokasi Janjian COD di Polinema</label>
-                                            <input type="text" name="meetup_location" value="<?= e($tx['meetup_location'] ?? '') ?>" placeholder="Misal: Kantin Gedung Sipil, Gazebo Elektro..."
+                                            <label class="block text-xs font-semibold text-slate-700 mb-1">Titik Lokasi COD (Polinema) <span class="text-red-500">*</span></label>
+                                            <select name="cod_location" required
+                                                    class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-900">
+                                                <option value="">Pilih Titik COD Kampus</option>
+                                                <?php 
+                                                $locMatched = false;
+                                                foreach ($codLocations as $loc): 
+                                                    $isSelected = ($parsedDealLoc['location'] === $loc['name']);
+                                                    if ($isSelected) $locMatched = true;
+                                                ?>
+                                                    <option value="<?= e($loc['name']) ?>" <?= $isSelected ? 'selected' : '' ?>>
+                                                        📍 <?= e($loc['name']) ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                                <?php if (!empty($parsedDealLoc['location']) && !$locMatched): ?>
+                                                    <option value="<?= e($parsedDealLoc['location']) ?>" selected>
+                                                        📍 <?= e($parsedDealLoc['location']) ?> (Sebelumnya)
+                                                    </option>
+                                                <?php endif; ?>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan Patokan COD <span class="text-slate-400 font-normal lowercase">(opsional)</span></label>
+                                            <input type="text" name="cod_note" value="<?= e($parsedDealLoc['note']) ?>" placeholder="Misal: Gazebo barat, meja kantin dekat kasir..."
                                                    class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-900">
                                         </div>
 

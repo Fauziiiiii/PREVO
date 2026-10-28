@@ -19,40 +19,55 @@ if (!$item || (int)$item['seller_id'] !== (int)$user['id']) {
 
 $pageTitle = 'Edit Barang · ' . $item['title'];
 $categories = $itemService->getCategories();
+$codLocations = $itemService->getActiveLocations();
 $errors = [];
+
+$parsedLoc = parse_lokasi_cod($item['location_info'] ?? '');
 
 $formData = [
     'title'         => $item['title'],
     'category_id'   => $item['category_id'],
     'condition'     => $item['condition'],
     'price'         => (int)$item['price'],
+    'cod_location'  => $parsedLoc['location'],
+    'cod_note'      => $parsedLoc['note'],
     'location_info' => $item['location_info'],
     'description'   => $item['description']
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
+    $codLoc = sanitize_input($_POST['cod_location'] ?? '');
+    $codNote = sanitize_input($_POST['cod_note'] ?? '');
+    $formattedLoc = format_lokasi_cod($codLoc, $codNote);
+
     $formData = [
         'title'         => sanitize_input($_POST['title'] ?? ''),
         'category_id'   => sanitize_input($_POST['category_id'] ?? ''),
         'condition'     => sanitize_input($_POST['condition'] ?? ''),
         'price'         => sanitize_input($_POST['price'] ?? ''),
-        'location_info' => sanitize_input($_POST['location_info'] ?? ''),
+        'cod_location'  => $codLoc,
+        'cod_note'      => $codNote,
+        'location_info' => $formattedLoc,
         'description'   => sanitize_input($_POST['description'] ?? '')
     ];
 
-    $photoFile = $_FILES['photo'] ?? null;
-    $res = $itemService->updateItem($itemId, $user['id'], $formData, $photoFile);
-
-    if ($res['success']) {
-        if ($res['new_status'] === 'menunggu_persetujuan') {
-            set_flash('success', 'Perubahan disimpan! Barang telah diajukan ulang ke antrean review Admin.');
-        } else {
-            set_flash('success', 'Informasi barang berhasil diperbarui!');
-        }
-        redirect('/barang/kelola.php');
+    if (empty($codLoc)) {
+        $errors[] = 'Silakan pilih titik lokasi COD di area kampus Polinema.';
     } else {
-        $errors[] = $res['error'];
+        $photoFile = $_FILES['photo'] ?? null;
+        $res = $itemService->updateItem($itemId, $user['id'], $formData, $photoFile);
+
+        if ($res['success']) {
+            if ($res['new_status'] === 'menunggu_persetujuan') {
+                set_flash('success', 'Perubahan disimpan! Barang telah diajukan ulang ke antrean review Admin.');
+            } else {
+                set_flash('success', 'Informasi barang berhasil diperbarui!');
+            }
+            redirect('/barang/kelola.php');
+        } else {
+            $errors[] = $res['error'];
+        }
     }
 }
 
@@ -125,7 +140,7 @@ require_once __DIR__ . '/../views/partials/header.php';
                 </div>
             </div>
 
-            <!-- Harga & Titik Temu COD -->
+            <!-- Harga & Titik Temu COD Kampus Polinema -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Harga Penawaran Awal (Rp)</label>
@@ -133,10 +148,35 @@ require_once __DIR__ . '/../views/partials/header.php';
                            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-emerald-600">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Lokasi COD / Area Kos</label>
-                    <input type="text" name="location_info" required value="<?= e($formData['location_info']) ?>"
-                           class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-emerald-600">
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Titik COD (Area Kampus)</label>
+                    <select name="cod_location" required 
+                            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:outline-none focus:border-emerald-600">
+                        <option value="">Pilih Titik COD Kampus</option>
+                        <?php 
+                        $matched = false;
+                        foreach ($codLocations as $loc): 
+                            $isSelected = ($formData['cod_location'] === $loc['name']);
+                            if ($isSelected) $matched = true;
+                        ?>
+                            <option value="<?= e($loc['name']) ?>" <?= $isSelected ? 'selected' : '' ?>>
+                                📍 <?= e($loc['name']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                        <?php if (!empty($formData['cod_location']) && !$matched): ?>
+                            <option value="<?= e($formData['cod_location']) ?>" selected>
+                                📍 <?= e($formData['cod_location']) ?> (Sebelumnya)
+                            </option>
+                        <?php endif; ?>
+                    </select>
                 </div>
+            </div>
+
+            <!-- Patokan Spesifik Lokasi COD (Opsional) -->
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Catatan Patokan COD <span class="text-slate-400 font-normal lowercase">(opsional)</span></label>
+                <input type="text" name="cod_note" value="<?= e($formData['cod_note']) ?>" placeholder="Contoh: Depan pintu masuk utama / Meja gazebo dekat taman"
+                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-emerald-600">
+                <p class="text-[11px] text-slate-400 mt-1">Titik temu dibatasi di lingkungan kampus Polinema demi kenyamanan dan keamanan transaksi.</p>
             </div>
 
             <!-- Foto Produk -->

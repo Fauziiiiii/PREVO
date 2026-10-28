@@ -113,6 +113,14 @@ class ItemService {
     }
 
     /**
+     * Mengambil daftar titik lokasi COD yang aktif untuk dropdown formulir
+     */
+    public function getActiveLocations(): array {
+        $stmt = $this->db->query("SELECT id, name FROM cod_locations WHERE is_active = TRUE ORDER BY name ASC");
+        return $stmt->fetchAll();
+    }
+
+    /**
      * Memeriksa apakah barang di-bookmark pengguna
      */
     public function isFavorited(int $userId, int $itemId): bool {

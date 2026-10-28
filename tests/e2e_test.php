@@ -5,6 +5,7 @@
 
 require_once __DIR__ . '/../config/app.php';
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/helpers.php';
 require_once __DIR__ . '/../services/AuthService.php';
 require_once __DIR__ . '/../services/ItemService.php';
 require_once __DIR__ . '/../services/TransactionService.php';
@@ -270,6 +271,58 @@ assert_test("6.2 Pembeli membatalkan transaksi pending", $cancelRes['success'], 
 $item2Reset = $itemService->getItemDetail($item2Id);
 assert_test("6.3 Trigger otomatis mengembalikan status barang kedua menjadi 'tersedia'", 
     $item2Reset['status'] === 'tersedia'
+);
+
+// -----------------------------------------------------------------
+// 7. UJI MASTER DATA LOKASI COD KAMPUS POLINEMA & HELPER FORMATTER
+// -----------------------------------------------------------------
+echo "\n--- 7. Testing Campus COD Master Data & Formatter ---\n";
+
+// 7.1 Test Helper Formatter & Parser
+$formattedWithNote = format_lokasi_cod('Kantin Graha Polinema', 'Lantai 1 dekat kasir');
+$parsedWithNote = parse_lokasi_cod($formattedWithNote);
+assert_test("7.1 Helper format & parse lokasi COD dengan catatan patokan", 
+    $formattedWithNote === 'Kantin Graha Polinema — Lantai 1 dekat kasir' &&
+    $parsedWithNote['location'] === 'Kantin Graha Polinema' &&
+    $parsedWithNote['note'] === 'Lantai 1 dekat kasir'
+);
+
+$formattedNoNote = format_lokasi_cod('Gazebo Gedung Sipil', '');
+$parsedNoNote = parse_lokasi_cod($formattedNoNote);
+assert_test("7.2 Helper format & parse lokasi COD tanpa catatan patokan", 
+    $formattedNoNote === 'Gazebo Gedung Sipil' &&
+    $parsedNoNote['location'] === 'Gazebo Gedung Sipil' &&
+    $parsedNoNote['note'] === ''
+);
+
+// 7.3 Test Active Locations List
+$activeLocs = $itemService->getActiveLocations();
+assert_test("7.3 ItemService::getActiveLocations() memuat data master lokasi aktif", 
+    is_array($activeLocs) && count($activeLocs) >= 15
+);
+
+// 7.4 Admin CRUD Lokasi COD
+$db->exec("DELETE FROM cod_locations WHERE name LIKE 'Spot Uji E2E%'");
+$addLocRes = $adminService->addLocation('Spot Uji E2E Polinema');
+assert_test("7.4 Admin berhasil menambah titik COD baru", 
+    $addLocRes['success'] && !empty($addLocRes['id']),
+    $addLocRes['error'] ?? ''
+);
+$testLocId = (int)$addLocRes['id'];
+
+$toggleRes = $adminService->toggleLocationStatus($testLocId);
+assert_test("7.5 Admin berhasil menonaktifkan titik COD", 
+    $toggleRes['success'] && $toggleRes['new_status'] === false
+);
+
+$updateLocRes = $adminService->updateLocation($testLocId, 'Spot Uji E2E Polinema Updated', true);
+assert_test("7.6 Admin berhasil memperbarui nama dan mengaktifkan kembali titik COD", 
+    $updateLocRes['success']
+);
+
+$delLocRes = $adminService->deleteLocation($testLocId);
+assert_test("7.7 Admin berhasil menghapus titik COD uji", 
+    $delLocRes['success']
 );
 
 // -----------------------------------------------------------------

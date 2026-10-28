@@ -12,6 +12,7 @@ DROP TABLE IF EXISTS transactions CASCADE;
 DROP TABLE IF EXISTS favorites CASCADE;
 DROP TABLE IF EXISTS items CASCADE;
 DROP TABLE IF EXISTS categories CASCADE;
+DROP TABLE IF EXISTS cod_locations CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 DROP TYPE IF EXISTS user_role CASCADE;
 DROP TYPE IF EXISTS item_condition CASCADE;
@@ -99,6 +100,22 @@ CREATE TABLE categories (
 COMMENT ON TABLE categories IS 'Kategori barang — hanya admin yang bisa CRUD (enforced di aplikasi)';
 
 -- ============================================================
+
+-- ============================================================
+--  TABEL 2B: COD_LOCATIONS
+--  Master titik lokasi COD resmi di area kampus Polinema
+-- ============================================================
+
+CREATE TABLE cod_locations (
+    id          SERIAL PRIMARY KEY,
+    name        VARCHAR(100) UNIQUE NOT NULL,
+    is_active   BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+COMMENT ON TABLE cod_locations IS 'Master data titik lokasi COD resmi di area kampus Polinema';
+
 --  TABEL 3: ITEMS
 --  Listing barang yang dijual mahasiswa
 -- ============================================================

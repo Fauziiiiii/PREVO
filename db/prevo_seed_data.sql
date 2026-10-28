@@ -12,6 +12,7 @@ TRUNCATE TABLE
     favorites, 
     items, 
     categories, 
+    cod_locations, 
     users 
 RESTART IDENTITY CASCADE;
 
@@ -67,6 +68,29 @@ INSERT INTO categories (name, description, icon) VALUES
     ('Lain-lain',           'Barang yang tidak masuk kategori di atas',     'more_horiz');
 
 -- ============================================================
+
+-- ============================================================
+--  2B. COD LOCATIONS (Denah Resmi Kampus Polinema)
+-- ============================================================
+
+INSERT INTO cod_locations (name, is_active) VALUES
+    ('Graha Polinema (Lobi Utama / Gazebo)', TRUE),
+    ('Pos Satpam & ATM Center Gerbang Utama (Suhat)', TRUE),
+    ('Pusat Informasi Polinema (Gedung AW)', TRUE),
+    ('Masjid Raya An-Nur Polinema', TRUE),
+    ('Kantin Kampus Pusat (Dekat Gedung AB)', TRUE),
+    ('Open Theater Polinema (Gedung AV)', TRUE),
+    ('Gedung Kantor Pusat / Presidium (Gedung AA)', TRUE),
+    ('Gedung Kuliah Bersama & TI (GKB / Gedung AX)', TRUE),
+    ('Aula Pertamina & Sekber Ormawa (Gedung AM / AS)', TRUE),
+    ('Poliklinik Polinema (Gedung AR)', TRUE),
+    ('Kantin Teknik / Gazebo Mesin', TRUE),
+    ('Gedung Jurusan Teknik Sipil', TRUE),
+    ('Gedung Jurusan Teknik Mesin', TRUE),
+    ('Lapangan Mini Soccer / Area Olahraga', TRUE),
+    ('Area Kampus Lainnya (Sebutkan di Catatan)', TRUE)
+ON CONFLICT (name) DO NOTHING;
+
 --  3. ITEMS (ID: 1 - 12)
 --  Mencakup variasi status: tersedia, booking, terjual,
 --  menunggu_persetujuan (antrean admin), dan ditolak.

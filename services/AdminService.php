@@ -282,4 +282,80 @@ class AdminService {
             return ['success' => false, 'error' => 'Gagal menghapus kategori: ' . $e->getMessage()];
         }
     }
+
+    /**
+     * Mengambil seluruh daftar master titik COD kampus
+     */
+    public function getLocations(): array {
+        $sql = "SELECT * FROM cod_locations ORDER BY is_active DESC, name ASC";
+        return $this->db->query($sql)->fetchAll();
+    }
+
+    /**
+     * Menambah titik COD baru
+     */
+    public function addLocation(string $name): array {
+        $name = trim($name);
+        if (empty($name)) {
+            return ['success' => false, 'error' => 'Nama titik COD tidak boleh kosong.'];
+        }
+
+        try {
+            $stmt = $this->db->prepare("INSERT INTO cod_locations (name, is_active) VALUES (:name, TRUE) RETURNING id");
+            $stmt->execute(['name' => $name]);
+            $newId = (int)$stmt->fetchColumn();
+            return ['success' => true, 'id' => $newId];
+        } catch (PDOException $e) {
+            return ['success' => false, 'error' => 'Gagal menambah titik COD (mungkin nama lokasi sudah ada): ' . $e->getMessage()];
+        }
+    }
+
+    /**
+     * Memperbarui nama dan status titik COD
+     */
+    public function updateLocation(int $id, string $name, bool $isActive): array {
+        $name = trim($name);
+        if (empty($name)) {
+            return ['success' => false, 'error' => 'Nama titik COD tidak boleh kosong.'];
+        }
+
+        try {
+            $stmt = $this->db->prepare("UPDATE cod_locations SET name = :name, is_active = :is_active, updated_at = NOW() WHERE id = :id");
+            $stmt->execute([
+                'name'      => $name,
+                'is_active' => $isActive ? 'true' : 'false',
+                'id'        => $id
+            ]);
+            return ['success' => true];
+        } catch (PDOException $e) {
+            return ['success' => false, 'error' => 'Gagal mengubah titik COD: ' . $e->getMessage()];
+        }
+    }
+
+    /**
+     * Mengubah status aktif/nonaktif titik COD
+     */
+    public function toggleLocationStatus(int $id): array {
+        try {
+            $stmt = $this->db->prepare("UPDATE cod_locations SET is_active = NOT is_active, updated_at = NOW() WHERE id = :id RETURNING is_active");
+            $stmt->execute(['id' => $id]);
+            $newStatus = (bool)$stmt->fetchColumn();
+            return ['success' => true, 'new_status' => $newStatus];
+        } catch (PDOException $e) {
+            return ['success' => false, 'error' => 'Gagal mengubah status: ' . $e->getMessage()];
+        }
+    }
+
+    /**
+     * Menghapus titik COD
+     */
+    public function deleteLocation(int $id): array {
+        try {
+            $stmt = $this->db->prepare("DELETE FROM cod_locations WHERE id = :id");
+            $stmt->execute(['id' => $id]);
+            return ['success' => true];
+        } catch (PDOException $e) {
+            return ['success' => false, 'error' => 'Gagal menghapus lokasi: ' . $e->getMessage()];
+        }
+    }
 }

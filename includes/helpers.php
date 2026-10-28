@@ -122,3 +122,37 @@ function upload_item_photo(array $file): array {
     // Simpan path relatif terhadap web root
     return ['success' => true, 'path' => 'uploads/items/' . $filename];
 }
+
+/**
+ * Format teks lokasi COD terpadu (Nama Lokasi + Catatan Patokan)
+ */
+function format_lokasi_cod(string $location, ?string $note = null): string {
+    $loc = trim($location);
+    $nt = trim($note ?? '');
+    if (!empty($nt)) {
+        return $loc . ' — ' . $nt;
+    }
+    return $loc;
+}
+
+/**
+ * Parsing teks lokasi COD terpadu menjadi komponen nama lokasi & catatan patokan
+ */
+function parse_lokasi_cod(?string $rawLocation): array {
+    $raw = trim($rawLocation ?? '');
+    if (empty($raw)) {
+        return ['location' => '', 'note' => ''];
+    }
+
+    if (str_contains($raw, ' — ')) {
+        $parts = explode(' — ', $raw, 2);
+        return ['location' => trim($parts[0]), 'note' => trim($parts[1])];
+    }
+
+    if (str_contains($raw, ' - ')) {
+        $parts = explode(' - ', $raw, 2);
+        return ['location' => trim($parts[0]), 'note' => trim($parts[1])];
+    }
+
+    return ['location' => $raw, 'note' => ''];
+}

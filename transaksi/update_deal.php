@@ -20,7 +20,15 @@ verify_csrf();
 
 $txId = (int)($_POST['tx_id'] ?? 0);
 $agreedPrice = (float)($_POST['agreed_price'] ?? 0);
-$location = trim($_POST['meetup_location'] ?? $_POST['meeting_location'] ?? '');
+
+if (isset($_POST['cod_location'])) {
+    $codLoc = sanitize_input($_POST['cod_location'] ?? '');
+    $codNote = sanitize_input($_POST['cod_note'] ?? '');
+    $location = format_lokasi_cod($codLoc, $codNote);
+} else {
+    $location = trim($_POST['meetup_location'] ?? $_POST['meeting_location'] ?? '');
+}
+
 $meetupTime = trim($_POST['meetup_time'] ?? $_POST['meeting_time'] ?? '');
 
 if ($txId <= 0 || $agreedPrice <= 0) {

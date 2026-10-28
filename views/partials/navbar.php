@@ -1,6 +1,6 @@
 <?php
-$user = current_user();
-$searchQuery = $_GET['q'] ?? '';
+    $user = current_user();
+    $searchQuery = $_GET['q'] ?? '';
 ?>
 <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-40 text-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -11,10 +11,10 @@ $searchQuery = $_GET['q'] ?? '';
                 <a href="<?= BASE_URL ?>/barang/index.php" class="flex items-center gap-1.5 text-xl font-extrabold tracking-tight group">
                     <span class="text-white">PRE</span><span class="text-emerald-400 group-hover:text-emerald-300 transition-colors">VO</span>
                 </a>
-                <span class="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-800/80">
+                <!-- <span class="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-800/80">
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                     Polinema Verified
-                </span>
+                </span> -->
             </div>
 
             <!-- Search Bar (Desktop) -->
@@ -42,6 +42,7 @@ $searchQuery = $_GET['q'] ?? '';
                             <a href="<?= BASE_URL ?>/admin/dashboard.php" class="px-3 py-1.5 rounded-md hover:bg-slate-800 text-slate-300 hover:text-white transition-colors">Dashboard SIM</a>
                             <a href="<?= BASE_URL ?>/admin/moderasi.php" class="px-3 py-1.5 rounded-md hover:bg-slate-800 text-slate-300 hover:text-white transition-colors">Moderasi Barang</a>
                             <a href="<?= BASE_URL ?>/admin/kategori.php" class="px-3 py-1.5 rounded-md hover:bg-slate-800 text-slate-300 hover:text-white transition-colors">Kategori</a>
+                            <a href="<?= BASE_URL ?>/admin/lokasi.php" class="px-3 py-1.5 rounded-md hover:bg-slate-800 text-slate-300 hover:text-white transition-colors">Titik COD</a>
                             <a href="<?= BASE_URL ?>/admin/laporan.php" class="px-3 py-1.5 rounded-md hover:bg-slate-800 text-slate-300 hover:text-white transition-colors">Laporan</a>
                         </div>
                     <?php else: ?>
