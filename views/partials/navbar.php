@@ -8,7 +8,7 @@
             
             <!-- Logo & Campus Badge -->
             <div class="flex items-center gap-3 shrink-0">
-                <a href="<?= BASE_URL ?>/barang/index.php" class="flex items-center gap-1.5 text-xl font-extrabold tracking-tight group">
+                <a href="<?= BASE_URL ?>/barang/index.php" class="flex items-center gap-0.5 text-xl font-extrabold tracking-tight group">
                     <span class="text-white">PRE</span><span class="text-emerald-400 group-hover:text-emerald-300 transition-colors">VO</span>
                 </a>
                 <!-- <span class="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-800/80">

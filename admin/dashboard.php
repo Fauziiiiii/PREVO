@@ -27,7 +27,7 @@ include __DIR__ . '/../views/partials/header.php';
                 <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
                     Sistem Informasi Manajemen (SIM)
                 </span>
-                <span class="text-xs text-slate-400">Semester 3 PBL-TI Polinema</span>
+                <!-- <span class="text-xs text-slate-400">Semester 3 PBL-TI Polinema</span> -->
             </div>
             <h1 class="text-2xl font-black text-slate-900 tracking-tight">Dashboard Eksekutif & Monitoring Operasional</h1>
             <p class="text-sm text-slate-500 mt-1">Laporan analitik sirkulasi barang bekas, kesehatan transaksi COD kampus, dan reputasi mahasiswa.</p>
@@ -135,7 +135,8 @@ include __DIR__ . '/../views/partials/header.php';
                 <p class="text-xs text-slate-500">Agregasi SQL View <code>monthly_summary</code> untuk evaluasi pertumbuhan transaksi antar bulan.</p>
             </div>
             <span class="text-xs font-mono text-slate-400 bg-white px-2.5 py-1 rounded-lg border border-slate-200">
-                PostgreSQL View: monthly_summary
+                <!-- PostgreSQL View: monthly_summary -->
+                monthly_summary
             </span>
         </div>
 

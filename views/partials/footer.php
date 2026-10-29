@@ -10,8 +10,8 @@
                     <span>Marketplace Barang Bekas Kampus Polinema</span>
                 </div>
                 <div class="flex flex-wrap items-center gap-4 text-slate-600">
-                    <span>Proyek PBL Semester 3 · TI 2G</span>
-                    <span>•</span>
+                    <!-- <span>Proyek PBL Semester 3 · TI 2G</span>
+                    <span>•</span> -->
                     <a href="<?= BASE_URL ?>/barang/index.php" class="hover:text-emerald-700">Katalog</a>
                     <span>•</span>
                     <a href="<?= BASE_URL ?>/auth/login.php" class="hover:text-emerald-700">Masuk Akun</a>
