@@ -17,3 +17,10 @@ Thumbs.db
 uploads/items/*
 !uploads/items/default.jpg
 !uploads/items/.gitkeep
+
+# Project archives & local assets
+*.zip
+
+# Internal docs & automated test suites
+docs/
+tests/
