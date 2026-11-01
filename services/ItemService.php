@@ -292,12 +292,8 @@ class ItemService {
         }
 
         // State machine: Jika sebelumnya 'ditolak', kembalikan ke 'menunggu_persetujuan' dan bersihkan alasan penolakan
-        $newStatus = $current['status'];
-        $rejectionReason = $current['rejection_reason'];
-        if ($current['status'] === 'ditolak') {
             $newStatus = 'menunggu_persetujuan';
             $rejectionReason = null;
-        }
 
         $sql = "UPDATE items 
                 SET title = :title, 
