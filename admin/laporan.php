@@ -103,9 +103,7 @@ include __DIR__ . '/../views/partials/header.php';
                         <!-- Foto Barang yang Dilaporkan -->
                         <div class="w-full md:w-32 h-32 shrink-0 rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
                             <?php 
-                                $imgFile = $rep['item_image'] ?: 'default.jpg';
-                                $hasImg = file_exists(ROOT_PATH . '/uploads/items/' . $imgFile);
-                                $imgUrl = $hasImg ? asset_url('uploads/items/' . $imgFile) : asset_url('uploads/items/default.jpg');
+                                $imgUrl = item_image_url($rep['item_image']);
                             ?>
                             <img src="<?= $imgUrl ?>" 
                                  alt="<?= e($rep['item_title']) ?>" 

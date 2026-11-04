@@ -84,9 +84,7 @@ include __DIR__ . '/../views/partials/header.php';
                         <!-- Foto Barang -->
                         <div class="w-full lg:w-56 h-56 shrink-0 rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
                             <?php 
-                                $imgFile = $item['image_url'] ?: 'default.jpg';
-                                $hasImg = file_exists(ROOT_PATH . '/uploads/items/' . $imgFile);
-                                $imgUrl = $hasImg ? asset_url('uploads/items/' . $imgFile) : asset_url('uploads/items/default.jpg');
+                                $imgUrl = item_image_url($item['image_url']);
                             ?>
                             <img src="<?= $imgUrl ?>" 
                                  alt="<?= e($item['title']) ?>" 

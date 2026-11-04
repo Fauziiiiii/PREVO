@@ -124,6 +124,17 @@ function upload_item_photo(array $file): array {
 }
 
 /**
+ * Sumber URL gambar barang, fallback ke default.jpg jika tidak ada
+ */
+function item_image_url(?string $path): string {
+    $path = ltrim((string)$path, '/');
+    if ($path !== '' && is_file(ROOT_PATH . '/' . $path)) {
+        return asset_url($path);
+    }
+    return asset_url('uploads/items/default.jpg');
+}
+
+/**
  * Format teks lokasi COD terpadu (Nama Lokasi + Catatan Patokan)
  */
 function format_lokasi_cod(string $location, ?string $note = null): string {

@@ -81,9 +81,7 @@ include __DIR__ . '/../views/partials/header.php';
             <!-- Info Transaksi -->
             <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200 mb-6">
                 <?php 
-                    $imgFile = $tx['item_image'] ?: 'default.jpg';
-                    $hasImg = file_exists(ROOT_PATH . '/uploads/items/' . $imgFile);
-                    $imgUrl = $hasImg ? asset_url('uploads/items/' . $imgFile) : asset_url('uploads/items/default.jpg');
+                    $imgUrl = item_image_url($tx['item_image']);
                 ?>
                 <img src="<?= $imgUrl ?>" 
                      alt="<?= e($tx['item_title']) ?>" 
