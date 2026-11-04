@@ -267,8 +267,8 @@ class ItemService {
             return ['success' => false, 'error' => 'Anda tidak memiliki hak akses untuk mengedit barang ini.'];
         }
 
-        if ($current['status'] === 'terjual' || $current['status'] === 'dihapus') {
-            return ['success' => false, 'error' => 'Barang yang sudah terjual atau dihapus tidak dapat diubah.'];
+        if ($current['status'] === 'terjual' || $current['status'] === 'dihapus' || $current['status'] === 'booking') {
+            return ['success' => false, 'error' => 'Saat ini barang tidak dapat diubah.'];
         }
 
         $title = trim($data['title'] ?? '');
