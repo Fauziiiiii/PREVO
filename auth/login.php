@@ -75,8 +75,21 @@ require_once __DIR__ . '/../views/partials/header.php';
                 <div class="flex items-center justify-between mb-1">
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Kata Sandi</label>
                 </div>
-                <input type="password" name="password" required placeholder="••••••••"
-                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600">
+                <div class="relative">
+                    <input type="password" id="loginPassword" name="password" required placeholder="••••••••"
+                           class="w-full px-3.5 py-2.5 pr-10 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600">
+                    <button type="button" onclick="togglePassword('loginPassword', this)" 
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none"
+                            aria-label="Tampilkan atau sembunyikan kata sandi">
+                        <svg class="w-5 h-5 eye-icon-show" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        <svg class="w-5 h-5 eye-icon-hide hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <button type="submit" 
@@ -123,6 +136,21 @@ require_once __DIR__ . '/../views/partials/header.php';
 function fillLogin(id, pw) {
     document.querySelector('input[name="identifier"]').value = id;
     document.querySelector('input[name="password"]').value = pw;
+}
+
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const showIcon = btn.querySelector('.eye-icon-show');
+    const hideIcon = btn.querySelector('.eye-icon-hide');
+    if (input.type === 'password') {
+        input.type = 'text';
+        showIcon.classList.add('hidden');
+        hideIcon.classList.remove('hidden');
+    } else {
+        input.type = 'password';
+        showIcon.classList.remove('hidden');
+        hideIcon.classList.add('hidden');
+    }
 }
 </script>
 
