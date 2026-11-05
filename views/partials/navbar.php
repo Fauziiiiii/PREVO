@@ -37,7 +37,7 @@
                 <?php if (is_logged_in()): ?>
                     
                     <?php if (is_admin()): ?>
-                        <!-- Admin Navigation -->
+                        <!-- Admin Navigation (Desktop) -->
                         <div class="hidden lg:flex items-center gap-2 text-xs font-semibold">
                             <a href="<?= BASE_URL ?>/admin/dashboard.php" class="px-3 py-1.5 rounded-md hover:bg-slate-800 text-slate-300 hover:text-white transition-colors">Dashboard SIM</a>
                             <a href="<?= BASE_URL ?>/admin/moderasi.php" class="px-3 py-1.5 rounded-md hover:bg-slate-800 text-slate-300 hover:text-white transition-colors">Moderasi Barang</a>
@@ -46,8 +46,8 @@
                             <a href="<?= BASE_URL ?>/admin/laporan.php" class="px-3 py-1.5 rounded-md hover:bg-slate-800 text-slate-300 hover:text-white transition-colors">Laporan</a>
                         </div>
                     <?php else: ?>
-                        <!-- Mahasiswa Navigation -->
-                        <a href="<?= BASE_URL ?>/barang/tambah.php" class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-bold px-3.5 py-2 rounded-lg shadow-sm transition-all">
+                        <!-- Mahasiswa Navigation (Desktop) -->
+                        <a href="<?= BASE_URL ?>/barang/tambah.php" class="hidden sm:inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-bold px-3.5 py-2 rounded-lg shadow-sm transition-all">
                             <span>+</span> Jual Barang
                         </a>
 
@@ -58,7 +58,7 @@
                         </div>
                     <?php endif; ?>
 
-                    <!-- User Dropdown Menu -->
+                    <!-- User Profile Icon / Name -->
                     <div class="relative flex items-center pl-2 border-l border-slate-700">
                         <a href="<?= BASE_URL ?>/auth/profil.php" class="flex items-center gap-2 hover:opacity-90">
                             <div class="w-8 h-8 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center text-xs ring-2 ring-slate-800">
@@ -69,14 +69,14 @@
                                 <div class="text-slate-400 font-normal"><?= e($user['role'] === 'admin' ? 'Administrator' : ($user['nim'] ?? 'Mahasiswa')) ?></div>
                             </div>
                         </a>
-                        <a href="<?= BASE_URL ?>/auth/logout.php" title="Keluar Akun" class="ml-3 text-slate-400 hover:text-rose-400 text-xs font-semibold">
+                        <a href="<?= BASE_URL ?>/auth/logout.php" title="Keluar Akun" class="hidden sm:block ml-3 text-slate-400 hover:text-rose-400 text-xs font-semibold">
                             Keluar
                         </a>
                     </div>
 
                 <?php else: ?>
-                    <!-- Guest Navigation -->
-                    <div class="flex items-center gap-2">
+                    <!-- Guest Navigation (Desktop) -->
+                    <div class="hidden sm:flex items-center gap-2">
                         <a href="<?= BASE_URL ?>/auth/login.php" class="text-xs sm:text-sm font-semibold text-slate-300 hover:text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-colors">
                             Masuk
                         </a>
@@ -85,6 +85,18 @@
                         </a>
                     </div>
                 <?php endif; ?>
+
+                <!-- Mobile Hamburger Button -->
+                <button type="button" onclick="toggleMobileNav()" 
+                        class="<?= (is_logged_in() && is_admin()) ? 'lg:hidden' : 'md:hidden' ?> p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500" 
+                        aria-label="Toggle navigasi mobile">
+                    <svg id="hamburgerIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                    <svg id="closeIcon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
 
             </div>
 
@@ -98,5 +110,84 @@
                        class="w-full bg-slate-800 text-sm text-white placeholder-slate-400 px-3.5 py-2 rounded-lg border border-slate-700 focus:outline-none focus:border-emerald-500">
             </form>
         </div>
+
+        <!-- Mobile Drawer Menu (Collapsible) -->
+        <div id="mobileNavMenu" class="hidden <?= (is_logged_in() && is_admin()) ? 'lg:hidden' : 'md:hidden' ?> pb-4 pt-2 border-t border-slate-800">
+            <div class="flex flex-col space-y-1 text-sm font-medium text-slate-300">
+                <?php if (is_logged_in()): ?>
+                    <?php if (is_admin()): ?>
+                        <div class="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Menu Administrator</div>
+                        <a href="<?= BASE_URL ?>/admin/dashboard.php" class="px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-white flex items-center gap-2">
+                            <span>📊</span> Dashboard SIM
+                        </a>
+                        <a href="<?= BASE_URL ?>/admin/moderasi.php" class="px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-white flex items-center gap-2">
+                            <span>🛡️</span> Moderasi Barang
+                        </a>
+                        <a href="<?= BASE_URL ?>/admin/kategori.php" class="px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-white flex items-center gap-2">
+                            <span>🏷️</span> Manajemen Kategori
+                        </a>
+                        <a href="<?= BASE_URL ?>/admin/lokasi.php" class="px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-white flex items-center gap-2">
+                            <span>📍</span> Titik COD Kampus
+                        </a>
+                        <a href="<?= BASE_URL ?>/admin/laporan.php" class="px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-white flex items-center gap-2">
+                            <span>🚨</span> Laporan Pelanggaran
+                        </a>
+                    <?php else: ?>
+                        <div class="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Aktivitas Mahasiswa</div>
+                        <a href="<?= BASE_URL ?>/barang/tambah.php" class="px-3 py-2 rounded-lg bg-emerald-600 text-white font-bold hover:bg-emerald-500 flex items-center gap-2">
+                            <span>➕</span> Pasang Iklan Barang
+                        </a>
+                        <a href="<?= BASE_URL ?>/barang/kelola.php" class="px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-white flex items-center gap-2">
+                            <span>📦</span> Barang Saya
+                        </a>
+                        <a href="<?= BASE_URL ?>/transaksi/riwayat.php" class="px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-white flex items-center gap-2">
+                            <span>🤝</span> Riwayat Transaksi COD
+                        </a>
+                        <a href="<?= BASE_URL ?>/barang/favorit.php" class="px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-white flex items-center gap-2">
+                            <span>❤️</span> Barang Favorit
+                        </a>
+                        <a href="<?= BASE_URL ?>/auth/profil.php" class="px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-white flex items-center gap-2">
+                            <span>👤</span> Profil Saya
+                        </a>
+                    <?php endif; ?>
+
+                    <div class="pt-2 border-t border-slate-800 mt-2">
+                        <a href="<?= BASE_URL ?>/auth/logout.php" class="px-3 py-2 rounded-lg text-rose-400 hover:bg-rose-950/40 hover:text-rose-300 flex items-center gap-2 font-semibold">
+                            <span>🚪</span> Keluar Akun
+                        </a>
+                    </div>
+                <?php else: ?>
+                    <a href="<?= BASE_URL ?>/barang/index.php" class="px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-white flex items-center gap-2">
+                        <span>🛍️</span> Jelajahi Katalog
+                    </a>
+                    <a href="<?= BASE_URL ?>/auth/login.php" class="px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-white flex items-center gap-2">
+                        <span>🔑</span> Masuk Akun
+                    </a>
+                    <a href="<?= BASE_URL ?>/auth/register.php" class="px-3 py-2 rounded-lg bg-emerald-600 text-white font-bold hover:bg-emerald-500 flex items-center gap-2">
+                        <span>🎓</span> Daftar Akun Mahasiswa
+                    </a>
+                <?php endif; ?>
+            </div>
+        </div>
     </div>
 </header>
+
+<script>
+function toggleMobileNav() {
+    const menu = document.getElementById('mobileNavMenu');
+    const burger = document.getElementById('hamburgerIcon');
+    const close = document.getElementById('closeIcon');
+    if (!menu) return;
+
+    const isHidden = menu.classList.contains('hidden');
+    if (isHidden) {
+        menu.classList.remove('hidden');
+        if (burger) burger.classList.add('hidden');
+        if (close) close.classList.remove('hidden');
+    } else {
+        menu.classList.add('hidden');
+        if (burger) burger.classList.remove('hidden');
+        if (close) close.classList.add('hidden');
+    }
+}
+</script>
