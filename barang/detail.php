@@ -259,8 +259,13 @@ require_once __DIR__ . '/../views/partials/header.php';
 
                 <div class="p-3 bg-slate-50 rounded-xl flex items-center justify-between text-xs">
                     <div>
-                        <span class="font-bold text-amber-600 text-sm">★ <?= number_format((float)$item['avg_rating'], 1) ?></span>
-                        <span class="text-slate-500 ml-1">(<?= (int)$item['total_reviews'] ?> Ulasan COD)</span>
+                        <?php if ((int)$item['total_reviews'] > 0): ?>
+                            <span class="font-bold text-amber-600 text-sm">★ <?= number_format((float)$item['avg_rating'], 1) ?></span>
+                            <span class="text-slate-500 ml-1">(<?= (int)$item['total_reviews'] ?> Ulasan COD)</span>
+                        <?php else: ?>
+                            <span class="font-semibold text-slate-700 text-xs">⭐ Penjual Baru</span>
+                            <span class="text-slate-400 ml-1 text-[11px]">(Belum ada ulasan)</span>
+                        <?php endif; ?>
                     </div>
                     <span class="font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded text-[11px]">
                         Mahasiswa Aktif

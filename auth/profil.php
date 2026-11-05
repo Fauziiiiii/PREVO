@@ -100,10 +100,15 @@ require_once __DIR__ . '/../views/partials/header.php';
                     </div>
                     <div>
                         <span class="text-slate-400 block text-[10px] uppercase font-bold">Reputasi Penjual</span>
-                        <span class="font-bold text-amber-600">
-                            ★ <?= !empty($userProfile['avg_rating']) ? number_format((float)$userProfile['avg_rating'], 1) : '5.0' ?>
-                        </span>
-                        <span class="text-slate-500">(<?= (int)($userProfile['total_reviews'] ?? 0) ?> Ulasan Sukses COD)</span>
+                        <?php if ((int)($userProfile['total_reviews'] ?? 0) > 0): ?>
+                            <span class="font-bold text-amber-600">
+                                ★ <?= number_format((float)$userProfile['avg_rating'], 1) ?>
+                            </span>
+                            <span class="text-slate-500">(<?= (int)$userProfile['total_reviews'] ?> Ulasan Sukses COD)</span>
+                        <?php else: ?>
+                            <span class="font-semibold text-slate-700 text-xs">⭐ Penjual Baru</span>
+                            <span class="text-slate-400 text-xs">(Belum ada ulasan)</span>
+                        <?php endif; ?>
                     </div>
                 </div>
 

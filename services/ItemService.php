@@ -22,7 +22,7 @@ class ItemService {
                        u.name AS seller_name, 
                        u.nim  AS seller_nim,
                        u.prodi AS seller_prodi,
-                       COALESCE(sr.avg_rating, 5.0) AS avg_rating,
+                       COALESCE(sr.avg_rating, 0.0) AS avg_rating,
                        COALESCE(sr.total_reviews, 0) AS total_reviews
                 FROM items i
                 JOIN categories c ON c.id = i.category_id
@@ -86,7 +86,7 @@ class ItemService {
                        u.whatsapp AS seller_whatsapp,
                        u.instagram AS seller_instagram,
                        u.telegram AS seller_telegram,
-                       COALESCE(sr.avg_rating, 5.0) AS avg_rating,
+                       COALESCE(sr.avg_rating, 0.0) AS avg_rating,
                        COALESCE(sr.total_reviews, 0) AS total_reviews
                 FROM items i
                 JOIN categories c ON c.id = i.category_id
@@ -151,7 +151,8 @@ class ItemService {
         $sql = "SELECT i.*, 
                        c.name AS category_name, 
                        u.name AS seller_name, 
-                       COALESCE(sr.avg_rating, 5.0) AS avg_rating
+                       COALESCE(sr.avg_rating, 0.0) AS avg_rating,
+                       COALESCE(sr.total_reviews, 0) AS total_reviews
                 FROM favorites f
                 JOIN items i ON i.id = f.item_id
                 JOIN categories c ON c.id = i.category_id
