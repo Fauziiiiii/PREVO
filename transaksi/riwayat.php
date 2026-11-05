@@ -172,9 +172,36 @@ include __DIR__ . '/../views/partials/header.php';
                                     <?php endif; ?>
 
                                     <?php if ($tx['status'] === 'pending' && !empty($tx['expires_at'])): ?>
-                                        <p class="text-xs text-amber-700 mt-2 font-medium">
-                                            ⏳ Batas Waktu Booking: <?= format_tanggal($tx['expires_at']) ?> (Otomatis batal jika tidak diselesaikan)
-                                        </p>
+                                        <div class="mt-2 text-xs font-medium">
+                                            <span class="countdown-timer text-amber-700" data-expires="<?= strtotime($tx['expires_at']) * 1000 ?>">
+                                                ⏳ Batas Waktu Booking: <?= format_tanggal($tx['expires_at']) ?>
+                                            </span>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <!-- Indikator Alur Konfirmasi 2-Tahap (Pembeli) -->
+                                    <?php if ($tx['status'] === 'pending'): ?>
+                                        <?php if (empty($tx['seller_confirmed_at'])): ?>
+                                            <div class="mt-2.5 p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-start gap-2">
+                                                <span class="text-base mt-0.5">⏳</span>
+                                                <div>
+                                                    <strong class="font-bold">Tahap 1: Menunggu Penjual Menyerahkan Barang</strong>
+                                                    <p class="text-[11px] text-amber-800/90 mt-0.5">
+                                                        Silakan janjian COD dengan penjual di area kampus. Begitu penjual mengonfirmasi penyerahan barang di web, tombol konfirmasi terima barang akan aktif di sini.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        <?php else: ?>
+                                            <div class="mt-2.5 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 flex items-start gap-2">
+                                                <span class="text-base mt-0.5">🎉</span>
+                                                <div>
+                                                    <strong class="font-bold text-emerald-900">Tahap 2: Penjual Sudah Menyerahkan Barang!</strong>
+                                                    <p class="text-[11px] text-emerald-800 mt-0.5">
+                                                        Penjual telah mengonfirmasi penyerahan barang (<?= format_tanggal($tx['seller_confirmed_at']) ?>). Mohon periksa kelayakan barang fisik, lalu klik <strong>"Konfirmasi Terima Barang & Selesai"</strong> di bawah.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
                                     <?php endif; ?>
                                 </div>
 
@@ -197,25 +224,34 @@ include __DIR__ . '/../views/partials/header.php';
 
                                     <div class="flex flex-wrap items-center gap-2">
                                         <?php if ($tx['status'] === 'pending'): ?>
-                                            <!-- Konfirmasi COD Selesai -->
-                                            <form action="<?= BASE_URL ?>/transaksi/selesai.php" method="POST" onsubmit="return confirm('Apakah Anda sudah bertemu COD, memeriksa barang, dan menyerahkan pembayaran kepada penjual?')">
-                                                <?= csrf_field() ?>
-                                                <input type="hidden" name="tx_id" value="<?= $tx['id'] ?>">
-                                                <input type="hidden" name="tab" value="buying">
-                                                <button type="submit" class="px-3.5 py-2 rounded-xl bg-blue-950 text-white text-xs font-semibold hover:bg-blue-900 transition-colors shadow-xs">
-                                                    Konfirmasi COD Selesai
+                                            <?php if (!empty($tx['seller_confirmed_at'])): ?>
+                                                <!-- Konfirmasi COD Selesai (Aktif saat penjual sudah menyerahkan barang) -->
+                                                <form action="<?= BASE_URL ?>/transaksi/selesai.php" method="POST" onsubmit="return confirm('Konfirmasi bahwa Anda sudah menerima barang dengan baik dan pembayaran telah diserahkan?')">
+                                                    <?= csrf_field() ?>
+                                                    <input type="hidden" name="tx_id" value="<?= $tx['id'] ?>">
+                                                    <input type="hidden" name="tab" value="buying">
+                                                    <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
+                                                        <span>✓</span> Konfirmasi Terima Barang & Selesai
+                                                    </button>
+                                                </form>
+                                            <?php else: ?>
+                                                <button type="button" disabled title="Menunggu penjual mengonfirmasi penyerahan barang di lokasi COD terlebih dahulu"
+                                                        class="px-3.5 py-2 rounded-xl bg-slate-100 text-slate-400 text-xs font-semibold cursor-not-allowed border border-slate-200">
+                                                    Menunggu Penyerahan Barang
                                                 </button>
-                                            </form>
+                                            <?php endif; ?>
 
-                                            <!-- Batalkan Booking -->
-                                            <form action="<?= BASE_URL ?>/transaksi/batal.php" method="POST" onsubmit="return confirm('Yakin ingin membatalkan booking ini? Barang akan kembali tersedia untuk mahasiswa lain.')">
-                                                <?= csrf_field() ?>
-                                                <input type="hidden" name="tx_id" value="<?= $tx['id'] ?>">
-                                                <input type="hidden" name="tab" value="buying">
-                                                <button type="submit" class="px-3 py-2 rounded-xl border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-50 transition-colors">
-                                                    Batalkan
-                                                </button>
-                                            </form>
+                                            <!-- Batalkan Booking (Hanya jika penjual belum serahkan barang) -->
+                                            <?php if (empty($tx['seller_confirmed_at'])): ?>
+                                                <form action="<?= BASE_URL ?>/transaksi/batal.php" method="POST" onsubmit="return confirm('Yakin ingin membatalkan booking ini? Barang akan kembali tersedia untuk mahasiswa lain.')">
+                                                    <?= csrf_field() ?>
+                                                    <input type="hidden" name="tx_id" value="<?= $tx['id'] ?>">
+                                                    <input type="hidden" name="tab" value="buying">
+                                                    <button type="submit" class="px-3 py-2 rounded-xl border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-50 transition-colors">
+                                                        Batalkan
+                                                    </button>
+                                                </form>
+                                            <?php endif; ?>
                                         <?php elseif ($tx['status'] === 'selesai'): ?>
                                             <?php if (empty($tx['review_id'])): ?>
                                                 <a href="<?= BASE_URL ?>/transaksi/beri_ulasan.php?tx_id=<?= $tx['id'] ?>" 
@@ -338,9 +374,36 @@ include __DIR__ . '/../views/partials/header.php';
                                     <?php endif; ?>
 
                                     <?php if ($tx['status'] === 'pending' && !empty($tx['expires_at'])): ?>
-                                        <p class="text-xs text-amber-700 mt-2 font-medium">
-                                            ⏳ Batas Waktu Booking: <?= format_tanggal($tx['expires_at']) ?>
-                                        </p>
+                                        <div class="mt-2 text-xs font-medium">
+                                            <span class="countdown-timer text-amber-700" data-expires="<?= strtotime($tx['expires_at']) * 1000 ?>">
+                                                ⏳ Batas Waktu Booking: <?= format_tanggal($tx['expires_at']) ?>
+                                            </span>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <!-- Indikator Alur Konfirmasi 2-Tahap (Penjual) -->
+                                    <?php if ($tx['status'] === 'pending'): ?>
+                                        <?php if (empty($tx['seller_confirmed_at'])): ?>
+                                            <div class="mt-2.5 p-3 rounded-xl bg-blue-50/70 border border-blue-200 text-xs text-blue-950 flex items-start gap-2">
+                                                <span class="text-base mt-0.5">🤝</span>
+                                                <div>
+                                                    <strong class="font-bold">Tahap 1: Temui Pembeli & Serahkan Barang</strong>
+                                                    <p class="text-[11px] text-blue-900/80 mt-0.5">
+                                                        Setelah bertemu pembeli di titik COD kampus dan menerima uang pembayaran, klik tombol <strong>"Konfirmasi Serah Barang"</strong> di bawah.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        <?php else: ?>
+                                            <div class="mt-2.5 p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-950 flex items-start gap-2">
+                                                <span class="text-base mt-0.5">⏳</span>
+                                                <div>
+                                                    <strong class="font-bold text-amber-900">Tahap 2: Menunggu Konfirmasi Penerimaan Pembeli</strong>
+                                                    <p class="text-[11px] text-amber-800 mt-0.5">
+                                                        Anda telah mengonfirmasi penyerahan barang pada <?= format_tanggal($tx['seller_confirmed_at']) ?>. Transaksi akan otomatis ditutup saat pembeli menekan konfirmasi penerimaan di akunnya.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
                                     <?php endif; ?>
 
                                     <?php if ($tx['status'] === 'selesai' && !empty($tx['review_id'])): ?>
@@ -365,35 +428,43 @@ include __DIR__ . '/../views/partials/header.php';
                                                 Chat WhatsApp Pembeli
                                             </a>
 
-                                            <!-- Tombol Update Kesepakatan (Toggle Modal) -->
-                                            <button type="button" onclick="document.getElementById('modal-deal-<?= $tx['id'] ?>').classList.remove('hidden')" 
-                                                    class="px-3.5 py-2 rounded-xl border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition-colors">
-                                                Atur Nego / Lokasi COD
-                                            </button>
+                                            <!-- Tombol Update Kesepakatan (Hanya sebelum barang diserahkan) -->
+                                            <?php if (empty($tx['seller_confirmed_at'])): ?>
+                                                <button type="button" onclick="document.getElementById('modal-deal-<?= $tx['id'] ?>').classList.remove('hidden')" 
+                                                        class="px-3.5 py-2 rounded-xl border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition-colors">
+                                                    Atur Nego / Lokasi COD
+                                                </button>
+                                            <?php endif; ?>
                                         <?php endif; ?>
                                     </div>
 
                                     <div class="flex flex-wrap items-center gap-2">
                                         <?php if ($tx['status'] === 'pending'): ?>
-                                            <!-- Konfirmasi COD Selesai Penjual -->
-                                            <form action="<?= BASE_URL ?>/transaksi/selesai.php" method="POST" onsubmit="return confirm('Konfirmasi bahwa barang telah diserahkan dan uang pembayaran telah Anda terima?')">
-                                                <?= csrf_field() ?>
-                                                <input type="hidden" name="tx_id" value="<?= $tx['id'] ?>">
-                                                <input type="hidden" name="tab" value="selling">
-                                                <button type="submit" class="px-3.5 py-2 rounded-xl bg-blue-950 text-white text-xs font-semibold hover:bg-blue-900 transition-colors shadow-xs">
-                                                    Konfirmasi COD Selesai
-                                                </button>
-                                            </form>
+                                            <?php if (empty($tx['seller_confirmed_at'])): ?>
+                                                <!-- Konfirmasi Serah Barang Penjual (Tahap 1) -->
+                                                <form action="<?= BASE_URL ?>/transaksi/selesai.php" method="POST" onsubmit="return confirm('Konfirmasi bahwa barang telah diserahkan dan uang pembayaran telah Anda terima dari pembeli?')">
+                                                    <?= csrf_field() ?>
+                                                    <input type="hidden" name="tx_id" value="<?= $tx['id'] ?>">
+                                                    <input type="hidden" name="tab" value="selling">
+                                                    <button type="submit" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5">
+                                                        <span>✓</span> Konfirmasi Serah Barang
+                                                    </button>
+                                                </form>
 
-                                            <!-- Batalkan Transaksi Penjual -->
-                                            <form action="<?= BASE_URL ?>/transaksi/batal.php" method="POST" onsubmit="return confirm('Batalkan transaksi ini? Barang Anda akan kembali berstatus tersedia untuk mahasiswa lain.')">
-                                                <?= csrf_field() ?>
-                                                <input type="hidden" name="tx_id" value="<?= $tx['id'] ?>">
-                                                <input type="hidden" name="tab" value="selling">
-                                                <button type="submit" class="px-3 py-2 rounded-xl border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-50 transition-colors">
-                                                    Batalkan
-                                                </button>
-                                            </form>
+                                                <!-- Batalkan Transaksi Penjual -->
+                                                <form action="<?= BASE_URL ?>/transaksi/batal.php" method="POST" onsubmit="return confirm('Batalkan transaksi ini? Barang Anda akan kembali berstatus tersedia untuk mahasiswa lain.')">
+                                                    <?= csrf_field() ?>
+                                                    <input type="hidden" name="tx_id" value="<?= $tx['id'] ?>">
+                                                    <input type="hidden" name="tab" value="selling">
+                                                    <button type="submit" class="px-3 py-2 rounded-xl border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-50 transition-colors">
+                                                        Batalkan
+                                                    </button>
+                                                </form>
+                                            <?php else: ?>
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-200">
+                                                    <span>✓</span> Barang Sudah Diserahkan
+                                                </span>
+                                            <?php endif; ?>
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -474,5 +545,33 @@ include __DIR__ . '/../views/partials/header.php';
         <?php endif; ?>
     <?php endif; ?>
 </div>
+
+<script>
+function updateCountdowns() {
+    const timers = document.querySelectorAll('.countdown-timer');
+    const now = Date.now();
+    timers.forEach(timer => {
+        const expires = parseInt(timer.getAttribute('data-expires'), 10);
+        if (isNaN(expires)) return;
+        const diff = expires - now;
+        if (diff <= 0) {
+            timer.innerHTML = '<span class="text-rose-600 font-bold">⚠️ Waktu Booking Kedaluwarsa</span>';
+            return;
+        }
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        let colorStyle = 'text-amber-700';
+        if (hours < 2) {
+            colorStyle = 'text-rose-600 font-bold animate-pulse';
+        }
+
+        timer.innerHTML = `⏳ Sisa Waktu Booking: <strong class="${colorStyle}">${hours}j ${minutes}m ${seconds}d</strong>`;
+    });
+}
+setInterval(updateCountdowns, 1000);
+document.addEventListener('DOMContentLoaded', updateCountdowns);
+</script>
 
 <?php include __DIR__ . '/../views/partials/footer.php'; ?>

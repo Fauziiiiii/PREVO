@@ -56,7 +56,23 @@ class TransactionService {
     }
 
     /**
-     * Konfirmasi COD selesai via Stored Procedure complete_transaction
+     * Konfirmasi penyerahan barang oleh penjual via Stored Procedure confirm_seller_handover (Tahap 1)
+     */
+    public function confirmSellerHandover(int $txId, int $sellerId): array {
+        try {
+            $stmt = $this->db->prepare("CALL confirm_seller_handover(:tx_id, :seller_id)");
+            $stmt->execute([
+                'tx_id'     => $txId,
+                'seller_id' => $sellerId
+            ]);
+            return ['success' => true];
+        } catch (PDOException $e) {
+            return ['success' => false, 'error' => 'Gagal mengonfirmasi penyerahan barang: ' . $e->getMessage()];
+        }
+    }
+
+    /**
+     * Konfirmasi penerimaan barang & COD selesai oleh pembeli via Stored Procedure complete_transaction (Tahap 2)
      */
     public function completeTransaction(int $txId, int $actorId): array {
         try {

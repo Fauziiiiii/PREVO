@@ -176,7 +176,7 @@ INSERT INTO favorites (user_id, item_id) VALUES
 -- ============================================================
 
 -- Transaksi 1: Rice Cooker (item_id=8), status selesai
-INSERT INTO transactions (item_id, buyer_id, seller_id, status, agreed_price, meetup_location, meetup_time, completed_at)
+INSERT INTO transactions (item_id, buyer_id, seller_id, status, agreed_price, meetup_location, meetup_time, seller_confirmed_at, completed_at)
 VALUES (
     8,
     6,  -- buyer: Budi
@@ -184,6 +184,7 @@ VALUES (
     'selesai',
     140000,
     'Kantin Graha Polinema',
+    NOW() - INTERVAL '5 days',
     NOW() - INTERVAL '5 days',
     NOW() - INTERVAL '5 days'
 );

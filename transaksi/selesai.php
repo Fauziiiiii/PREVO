@@ -1,6 +1,6 @@
 <?php
 // ============================================================
-//  PREVO - Handler Selesaikan Transaksi COD (Buyer / Seller)
+//  PREVO - Handler Konfirmasi Transaksi COD 2-Tahap
 // ============================================================
 
 require_once __DIR__ . '/../config/app.php';
@@ -27,17 +27,34 @@ if ($txId <= 0) {
 }
 
 $txService = new TransactionService();
-$result = $txService->completeTransaction($txId, (int)$user['id']);
+$tx = $txService->getTransactionById($txId);
 
-if ($result['success']) {
-    set_flash('success', 'Transaksi COD berhasil diselesaikan! Terima kasih telah bertransaksi secara aman di PREVO.');
-    // Jika aktor adalah pembeli, arahkan untuk memberi ulasan
-    $tx = $txService->getTransactionById($txId);
-    if ($tx && (int)$tx['buyer_id'] === (int)$user['id']) {
+if (!$tx) {
+    set_flash('error', 'Transaksi tidak ditemukan.');
+    redirect(BASE_URL . '/transaksi/riwayat.php?tab=' . $fromTab);
+}
+
+$userId = (int)$user['id'];
+
+if ((int)$tx['seller_id'] === $userId) {
+    // Penjual mengonfirmasi penyerahan barang (Tahap 1)
+    $result = $txService->confirmSellerHandover($txId, $userId);
+    if ($result['success']) {
+        set_flash('success', 'Penyerahan barang berhasil dikonfirmasi! Sekarang menunggu pembeli memeriksa barang dan menyelesaikan transaksi.');
+    } else {
+        set_flash('error', $result['error'] ?? 'Gagal mengonfirmasi penyerahan barang.');
+    }
+} elseif ((int)$tx['buyer_id'] === $userId) {
+    // Pembeli mengonfirmasi penerimaan barang & menyelesaikan transaksi (Tahap 2)
+    $result = $txService->completeTransaction($txId, $userId);
+    if ($result['success']) {
+        set_flash('success', 'Transaksi COD berhasil diselesaikan! Terima kasih telah bertransaksi aman di PREVO.');
         redirect(BASE_URL . '/transaksi/beri_ulasan.php?tx_id=' . $txId);
+    } else {
+        set_flash('error', $result['error'] ?? 'Gagal menyelesaikan transaksi.');
     }
 } else {
-    set_flash('error', $result['error'] ?? 'Gagal menyelesaikan transaksi.');
+    set_flash('error', 'Anda tidak memiliki hak akses pada transaksi ini.');
 }
 
 redirect(BASE_URL . '/transaksi/riwayat.php?tab=' . $fromTab);

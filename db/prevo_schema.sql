@@ -175,6 +175,7 @@ CREATE TABLE transactions (
     agreed_price     DECIMAL(12,2) CHECK (agreed_price >= 0),
     meetup_location  VARCHAR(150),
     meetup_time      TIMESTAMPTZ,
+    seller_confirmed_at TIMESTAMPTZ,
     expires_at       TIMESTAMPTZ,
     completed_at     TIMESTAMPTZ,
     created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -503,7 +504,52 @@ $$;
 COMMENT ON PROCEDURE cancel_transaction IS
     'Membatalkan transaksi pending oleh pembeli/penjual; status item otomatis kembali tersedia via trigger';
 
--- 4. Complete Transaction (Dapat dipanggil oleh Buyer maupun Seller)
+-- 4. Confirm Seller Handover (Tahap 1: Penjual mengonfirmasi penyerahan barang)
+CREATE OR REPLACE PROCEDURE confirm_seller_handover(
+    p_transaction_id INT,
+    p_seller_id      INT
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_seller_id INT;
+    v_status    transaction_status;
+    v_confirmed TIMESTAMPTZ;
+BEGIN
+    SELECT seller_id, status, seller_confirmed_at
+    INTO v_seller_id, v_status, v_confirmed
+    FROM transactions
+    WHERE id = p_transaction_id;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Transaksi dengan ID % tidak ditemukan.', p_transaction_id;
+    END IF;
+
+    IF p_seller_id <> v_seller_id THEN
+        RAISE EXCEPTION 'Hanya penjual barang yang dapat mengonfirmasi penyerahan barang.';
+    END IF;
+
+    IF v_status <> 'pending' THEN
+        RAISE EXCEPTION 'Hanya transaksi berstatus pending yang dapat dikonfirmasi penyerahannya.';
+    END IF;
+
+    IF v_confirmed IS NOT NULL THEN
+        RAISE EXCEPTION 'Penyerahan barang sudah pernah dikonfirmasi sebelumnya.';
+    END IF;
+
+    UPDATE transactions
+    SET seller_confirmed_at = NOW(),
+        updated_at = NOW()
+    WHERE id = p_transaction_id;
+
+    RAISE NOTICE 'Penjual (ID %) telah mengonfirmasi penyerahan barang untuk transaksi %.', p_seller_id, p_transaction_id;
+END;
+$$;
+
+COMMENT ON PROCEDURE confirm_seller_handover IS
+    'Tahap 1 konfirmasi COD: Penjual mengonfirmasi penyerahan barang ke pembeli';
+
+-- 5. Complete Transaction (Tahap 2: Pembeli mengonfirmasi penerimaan barang & menyelesaikan transaksi)
 CREATE OR REPLACE PROCEDURE complete_transaction(
     p_transaction_id INT,
     p_actor_id       INT
@@ -514,10 +560,11 @@ DECLARE
     v_buyer_id   INT;
     v_seller_id  INT;
     v_status     transaction_status;
+    v_confirmed  TIMESTAMPTZ;
 BEGIN
     -- Ambil data transaksi
-    SELECT buyer_id, seller_id, status
-    INTO v_buyer_id, v_seller_id, v_status
+    SELECT buyer_id, seller_id, status, seller_confirmed_at
+    INTO v_buyer_id, v_seller_id, v_status, v_confirmed
     FROM transactions
     WHERE id = p_transaction_id;
 
@@ -525,9 +572,9 @@ BEGIN
         RAISE EXCEPTION 'Transaksi dengan ID % tidak ditemukan.', p_transaction_id;
     END IF;
 
-    -- Validasi otorisasi pemanggil
-    IF p_actor_id <> v_buyer_id AND p_actor_id <> v_seller_id THEN
-        RAISE EXCEPTION 'Anda tidak memiliki hak akses untuk menyelesaikan transaksi ini.';
+    -- Validasi hanya pembeli yang dapat menyelesaikan transaksi final
+    IF p_actor_id <> v_buyer_id THEN
+        RAISE EXCEPTION 'Hanya pembeli yang dapat mengonfirmasi penerimaan barang dan menyelesaikan transaksi.';
     END IF;
 
     -- Validasi status transaksi
@@ -535,19 +582,25 @@ BEGIN
         RAISE EXCEPTION 'Hanya transaksi berstatus pending yang dapat diselesaikan (status saat ini: %).', v_status;
     END IF;
 
+    -- Validasi penjual harus sudah mengonfirmasi serah barang terlebih dahulu
+    IF v_confirmed IS NULL THEN
+        RAISE EXCEPTION 'Penjual belum mengonfirmasi penyerahan barang. Transaksi belum dapat diselesaikan.';
+    END IF;
+
     -- Update transaksi ke 'selesai'
     -- (Catatan: items.status otomatis diubah ke 'terjual' oleh trigger sync_item_status)
     UPDATE transactions
     SET status = 'selesai',
-        completed_at = NOW()
+        completed_at = NOW(),
+        updated_at = NOW()
     WHERE id = p_transaction_id;
 
-    RAISE NOTICE 'Transaksi % berhasil diselesaikan oleh user ID %.', p_transaction_id, p_actor_id;
+    RAISE NOTICE 'Transaksi % berhasil diselesaikan oleh pembeli ID %.', p_transaction_id, p_actor_id;
 END;
 $$;
 
 COMMENT ON PROCEDURE complete_transaction IS
-    'Konfirmasi COD selesai: dapat dieksekusi buyer atau seller; status item otomatis terjual via trigger';
+    'Tahap 2 konfirmasi COD: Pembeli mengonfirmasi penerimaan barang; status item otomatis terjual via trigger';
 
 -- 5. Release Expired Bookings (Rilis barang yang booking-nya kedaluwarsa)
 CREATE OR REPLACE PROCEDURE release_expired_bookings()
