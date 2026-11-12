@@ -247,6 +247,22 @@ CREATE TABLE reports (
 COMMENT ON TABLE  reports IS 'Laporan pelanggaran listing barang';
 COMMENT ON COLUMN reports.handled_by IS 'FK ke users (role=admin) yang menangani laporan — NULL jika belum diverifikasi';
 
+
+-- ============================================================
+--  TABEL 7: PASSWORD_RESET
+--  Laporan barang/pengguna yang melanggar aturan
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS password_resets (
+    id         SERIAL PRIMARY KEY,
+    email      VARCHAR(100) NOT NULL,
+    token_hash CHAR(64) NOT NULL,
+    expires_at TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_pwreset_token ON password_resets(token_hash);
+
 -- ============================================================
 --  INDEXES (untuk performa query umum)
 -- ============================================================
