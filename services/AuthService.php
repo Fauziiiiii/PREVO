@@ -7,17 +7,20 @@ require_once __DIR__ . '/../config/app.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/session.php';
 
-class AuthService {
+class AuthService
+{
     private PDO $db;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->db = get_db();
     }
 
     /**
      * Pendaftaran mahasiswa baru
      */
-    public function register(array $data): array {
+    public function register(array $data): array
+    {
         $nim = trim($data['nim'] ?? '');
         $email = strtolower(trim($data['email'] ?? ''));
         $name = trim($data['name'] ?? '');
@@ -110,7 +113,8 @@ class AuthService {
     /**
      * Verifikasi token aktivasi email
      */
-    public function verifyEmailToken(string $token): array {
+    public function verifyEmailToken(string $token): array
+    {
         if (empty($token)) {
             return ['success' => false, 'error' => 'Token verifikasi tidak valid.'];
         }
@@ -136,7 +140,8 @@ class AuthService {
     /**
      * Verifikasi kode OTP WhatsApp
      */
-    public function verifyWhatsAppOtp(int $userId, string $otp): array {
+    public function verifyWhatsAppOtp(int $userId, string $otp): array
+    {
         $stmt = $this->db->prepare("SELECT id, whatsapp_otp FROM users WHERE id = :id");
         $stmt->execute(['id' => $userId]);
         $user = $stmt->fetch();
@@ -166,7 +171,8 @@ class AuthService {
     /**
      * Login kredensial
      */
-    public function login(string $identifier, string $password): array {
+    public function login(string $identifier, string $password): array
+    {
         $identifier = trim($identifier);
         if (empty($identifier) || empty($password)) {
             return ['success' => false, 'error' => 'NIM/Email dan Kata Sandi wajib diisi.'];
@@ -186,7 +192,7 @@ class AuthService {
         // Cek aktivasi email
         if (!$user['is_active']) {
             return [
-                'success' => false, 
+                'success' => false,
                 'error'   => 'Akun Anda belum aktif. Silakan lakukan verifikasi email kampus terlebih dahulu.',
                 'need_email_verification' => true
             ];
@@ -213,7 +219,8 @@ class AuthService {
     /**
      * Update profil kontak & data diri
      */
-    public function updateProfile(int $userId, array $data): array {
+    public function updateProfile(int $userId, array $data): array
+    {
         $name = trim($data['name'] ?? '');
         $whatsapp = trim($data['whatsapp'] ?? '');
         $instagram = trim($data['instagram'] ?? '');
@@ -255,7 +262,8 @@ class AuthService {
     /**
      * Ambil data lengkap user berdasarkan ID
      */
-    public function getUserById(int $userId): ?array {
+    public function getUserById(int $userId): ?array
+    {
         $stmt = $this->db->prepare("SELECT u.*, sr.avg_rating, sr.total_reviews 
                                     FROM users u
                                     LEFT JOIN seller_ratings sr ON sr.seller_id = u.id
@@ -268,7 +276,8 @@ class AuthService {
     /**
      * Ambil data lengkap user berdasarkan Email
      */
-    public function getUserByEmail(string $email): ?array {
+    public function getUserByEmail(string $email): ?array
+    {
         $stmt = $this->db->prepare("SELECT u.*, sr.avg_rating, sr.total_reviews 
                                     FROM users u
                                     LEFT JOIN seller_ratings sr ON sr.seller_id = u.id
@@ -276,5 +285,83 @@ class AuthService {
         $stmt->execute(['email' => trim($email)]);
         $user = $stmt->fetch();
         return $user ?: null;
+    }
+
+    /** 
+     * Ajukan reset password: buat token reset & tandai waktu kedaluwarsa (30 menit).
+     */
+    public function requestPasswordReset(string $email): array
+    {
+        $user = $this->getUserByEmail($email);
+
+        if (!$user || (int)$user['is_active'] === 0) {
+            return ['success' => true];
+        }
+
+        $token = bin2hex(random_bytes(32));
+        $hashedToken = hash('sha256', $token);
+
+        try {
+            $stmt = $this->db->prepare(
+                "INSERT INTO password_resets (email, token_hash, expires_at)
+                VALUES (?, ?, NOW() + INTERVAL '30 minutes')"
+            );
+            $stmt->execute([$email, $hashedToken]);
+        } catch (PDOException $e) {
+            return ['success' => true];
+        }
+
+        // Lingkungan demo PHPmailer SMTP
+        return ['success' => true, 'token' => $token];
+    }
+
+    /**
+     * Cek validitas token reset (ada & belum kedaluwarsa)
+     */
+    public function isResetTokenValid(string $token): bool
+    {
+        if ($token === '') return false;
+        $stmt = $this->db->prepare(
+            "SELECT 1 FROM password_resets
+            WHERE token_hash = ? AND expires_at > NOW()"
+        );
+        $stmt->execute([hash('sha256', $token)]);
+        return (bool)$stmt->fetchColumn();
+    }
+
+    /**
+     * Terapkan password baru dari token reset yang valid, lalu hapus token (pakai sekali)
+     */
+    public function resetPassword(string $token, string $newPassword): array
+    {
+        if (!$this->isResetTokenValid($token)) {
+            return ['success' => false, 'error' => 'Tautan reset tidak valid atau sudah kedaluwarsa.'];
+        }
+
+        $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
+
+        try {
+            $stmt = $this->db->prepare(
+                "SELECT email FROM password_resets
+                WHERE token_hash = ? AND expires_at > NOW()"
+            );
+            $stmt->execute([hash('sha256', $token)]);
+            $emailRow = $stmt->fetchColumn();
+            if (!$emailRow) {
+                return ['success' => false, 'error' => 'Token invalid/expired'];
+            }
+
+            $stmt = $this->db->prepare(
+                "UPDATE users SET password = ? WHERE LOWER(email) = LOWER(?)"
+            );
+            $stmt->execute([$hashedPassword, $emailRow]);
+
+            // habis dipakai: hapus semua token milik email ini
+            $this->db->prepare("DELETE FROM password_resets WHERE email = ?")
+                ->execute([$emailRow]);
+            return ['success' => true];
+        } catch (PDOException $e) {
+            return ['success' => false, 'error' => 'Gagal mengubah password: ' . $e->getMessage()];
+        }
     }
 }
