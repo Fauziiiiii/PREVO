@@ -50,6 +50,8 @@ class AuthService
         $cleanWa = preg_replace('/[^0-9]/', '', $whatsapp);
         if (str_starts_with($cleanWa, '0')) {
             $cleanWa = '62' . substr($cleanWa, 1);
+        } elseif (str_starts_with($cleanWa, '8')) {
+            $cleanWa = '628' . $cleanWa;
         }
         if (!preg_match('/^628[0-9]{8,13}$/', $cleanWa)) {
             return ['success' => false, 'error' => 'Format nomor WhatsApp tidak valid (harus format nomor seluler Indonesia yang aktif).'];
