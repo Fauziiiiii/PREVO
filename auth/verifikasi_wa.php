@@ -12,22 +12,50 @@ if (!empty($user['whatsapp_verified_at'])) {
     redirect('/barang/index.php');
 }
 
+$from = sanitize_input($_GET['from'] ?? '');
 $pageTitle = 'Verifikasi Nomor WhatsApp';
 $authService = new AuthService();
 $userData = $authService->getUserById($user['id']);
 $currentOtp = $userData['whatsapp_otp'] ?? '';
+
+// Jika OTP belum dibuat (misal null), buatkan otomatis
+if (empty($currentOtp)) {
+    $resendInit = $authService->resendWhatsAppOtp($user['id']);
+    if ($resendInit['success']) {
+        $currentOtp = $resendInit['otp'];
+    }
+}
+
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
-    $otp = sanitize_input($_POST['otp'] ?? '');
-    $res = $authService->verifyWhatsAppOtp($user['id'], $otp);
+    $action = $_POST['action'] ?? 'verify';
 
-    if ($res['success']) {
-        set_flash('success', 'Nomor WhatsApp Anda berhasil diverifikasi! Sekarang Anda dapat menjual dan mem-booking barang.');
-        redirect('/barang/index.php');
+    if ($action === 'resend') {
+        $resend = $authService->resendWhatsAppOtp($user['id']);
+        if ($resend['success']) {
+            set_flash('info', 'Kode OTP baru telah berhasil dibuat dan dikirimkan (Simulasi WhatsApp).');
+        } else {
+            set_flash('error', $resend['error'] ?? 'Gagal membuat kode OTP baru.');
+        }
+        $redirectUrl = '/auth/verifikasi_wa.php' . (!empty($from) ? '?from=' . urlencode($from) : '');
+        redirect($redirectUrl);
     } else {
-        $errors[] = $res['error'];
+        $otp = sanitize_input($_POST['otp'] ?? '');
+        $res = $authService->verifyWhatsAppOtp($user['id'], $otp);
+
+        if ($res['success']) {
+            if ($from === 'profile') {
+                set_flash('success', 'Nomor WhatsApp baru Anda berhasil diverifikasi ulang! Informasi kontak profil Anda telah aktif.');
+                redirect('/auth/profil.php');
+            } else {
+                set_flash('success', 'Nomor WhatsApp Anda berhasil diverifikasi! Sekarang Anda dapat menjual dan mem-booking barang.');
+                redirect('/barang/index.php');
+            }
+        } else {
+            $errors[] = $res['error'];
+        }
     }
 }
 
@@ -43,7 +71,7 @@ require_once __DIR__ . '/../views/partials/header.php';
 
         <h1 class="text-xl font-bold text-slate-900 tracking-tight">Verifikasi Nomor WhatsApp</h1>
         <p class="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
-            Nomor WhatsApp Anda (<strong class="text-slate-900">+<?= e($userData['whatsapp'] ?? '') ?></strong>) digunakan untuk menghubungkan penjual dan pembeli saat COD. Silakan masukkan kode OTP untuk mengaktifkan akun.
+            Nomor WhatsApp Anda (<strong class="text-slate-900 font-mono">+<?= e($userData['whatsapp'] ?? '') ?></strong>) digunakan untuk menghubungkan penjual dan pembeli saat COD kampus. Silakan masukkan kode OTP untuk mengaktifkan fitur transaksi.
         </p>
 
         <!-- Banner Simulasi OTP -->
@@ -53,10 +81,10 @@ require_once __DIR__ . '/../views/partials/header.php';
             </div>
             <div class="flex items-center justify-between mt-2">
                 <span class="text-lg font-mono font-extrabold tracking-widest text-emerald-800 bg-white px-3 py-1 rounded border border-emerald-300">
-                    <?= e($currentOtp ?: 'Belum dibuat') ?>
+                    <?= e($currentOtp ?: 'Membuat kode...') ?>
                 </span>
                 <button type="button" onclick="document.getElementById('inputOtp').value = '<?= e($currentOtp) ?>'"
-                        class="text-xs bg-emerald-700 text-white font-semibold px-2.5 py-1.5 rounded-lg hover:bg-emerald-800">
+                        class="text-xs bg-emerald-700 text-white font-semibold px-2.5 py-1.5 rounded-lg hover:bg-emerald-800 shadow-xs transition-colors">
                     Salin Otomatis
                 </button>
             </div>
@@ -70,8 +98,9 @@ require_once __DIR__ . '/../views/partials/header.php';
             </div>
         <?php endif; ?>
 
-        <form action="<?= BASE_URL ?>/auth/verifikasi_wa.php" method="POST" class="space-y-4">
+        <form action="<?= BASE_URL ?>/auth/verifikasi_wa.php<?= !empty($from) ? '?from=' . urlencode($from) : '' ?>" method="POST" class="space-y-4">
             <?= csrf_field() ?>
+            <input type="hidden" name="action" value="verify">
 
             <div>
                 <input type="text" name="otp" id="inputOtp" required maxlength="6" placeholder="Masukkan 6 Digit OTP"
@@ -84,8 +113,18 @@ require_once __DIR__ . '/../views/partials/header.php';
             </button>
         </form>
 
-        <div class="mt-4 text-xs text-slate-400">
-            Ingin mengganti nomor? <a href="<?= BASE_URL ?>/auth/profil.php" class="text-emerald-700 font-bold hover:underline">Edit nomor di Profil</a>
+        <!-- Aksi Kirim Ulang OTP -->
+        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+            <form action="<?= BASE_URL ?>/auth/verifikasi_wa.php<?= !empty($from) ? '?from=' . urlencode($from) : '' ?>" method="POST" class="inline">
+                <?= csrf_field() ?>
+                <input type="hidden" name="action" value="resend">
+                <button type="submit" class="text-xs text-emerald-700 hover:text-emerald-800 font-semibold hover:underline">
+                    🔄 Kirim Ulang OTP
+                </button>
+            </form>
+            <a href="<?= BASE_URL ?>/auth/profil.php" class="text-slate-500 hover:text-slate-800 font-semibold hover:underline">
+                Ubah Nomor di Profil →
+            </a>
         </div>
 
     </div>

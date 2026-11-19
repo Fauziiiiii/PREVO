@@ -220,45 +220,143 @@ class AuthService
 
     /**
      * Update profil kontak & data diri
+     * Catatan Kebijakan PREVO:
+     * 1. Nama mahasiswa terkunci pada data resmi Polinema (tidak dapat diubah di profil).
+     * 2. Jika nomor WhatsApp diganti, status verifikasi WA di-reset dan wajib verifikasi ulang dengan kode OTP baru.
      */
     public function updateProfile(int $userId, array $data): array
     {
-        $name = trim($data['name'] ?? '');
+        $currentUser = $this->getUserById($userId);
+        if (!$currentUser) {
+            return ['success' => false, 'error' => 'Pengguna tidak ditemukan.'];
+        }
+
         $whatsapp = trim($data['whatsapp'] ?? '');
         $instagram = trim($data['instagram'] ?? '');
         $telegram = trim($data['telegram'] ?? '');
 
-        if (empty($name) || empty($whatsapp)) {
-            return ['success' => false, 'error' => 'Nama dan Nomor WhatsApp tidak boleh kosong.'];
+        if (empty($whatsapp)) {
+            return ['success' => false, 'error' => 'Nomor WhatsApp wajib diisi.'];
         }
 
+        // Normalisasi format nomor WhatsApp Indonesia
         $cleanWa = preg_replace('/[^0-9]/', '', $whatsapp);
         if (str_starts_with($cleanWa, '0')) {
             $cleanWa = '62' . substr($cleanWa, 1);
+        } elseif (str_starts_with($cleanWa, '8')) {
+            $cleanWa = '62' . $cleanWa;
         }
 
-        $stmt = $this->db->prepare("UPDATE users 
-                                    SET name = :name, 
-                                        whatsapp = :wa, 
-                                        phone = :phone, 
-                                        instagram = :ig, 
-                                        telegram = :tg 
-                                    WHERE id = :id");
-        $stmt->execute([
-            'name'  => $name,
-            'wa'    => $cleanWa,
-            'phone' => $cleanWa,
-            'ig'    => $instagram ?: null,
-            'tg'    => $telegram ?: null,
-            'id'    => $userId
-        ]);
-
-        if (isset($_SESSION['user']) && $_SESSION['user']['id'] == $userId) {
-            $_SESSION['user']['name'] = $name;
-            $_SESSION['user']['whatsapp'] = $cleanWa;
+        if (!preg_match('/^628[0-9]{8,13}$/', $cleanWa)) {
+            return ['success' => false, 'error' => 'Format nomor WhatsApp tidak valid (harus format nomor seluler Indonesia yang aktif, contoh: 081234567890).'];
         }
 
-        return ['success' => true];
+        // Periksa apakah nomor WhatsApp berubah
+        $oldWa = preg_replace('/[^0-9]/', '', (string)($currentUser['whatsapp'] ?? ''));
+        $waChanged = ($cleanWa !== $oldWa);
+
+        // Jika nomor berubah, periksa duplikasi di akun mahasiswa lain (format 628... maupun 08...)
+        if ($waChanged) {
+            $localWa = '0' . substr($cleanWa, 2);
+            $checkWa = $this->db->prepare("SELECT id FROM users 
+                                           WHERE (whatsapp = :wa 
+                                              OR whatsapp = :local_wa 
+                                              OR phone = :wa 
+                                              OR phone = :local_wa) 
+                                             AND id <> :id");
+            $checkWa->execute([
+                'wa'       => $cleanWa,
+                'local_wa' => $localWa,
+                'id'       => $userId
+            ]);
+            if ($checkWa->fetch()) {
+                return ['success' => false, 'error' => 'Nomor WhatsApp sudah digunakan oleh akun mahasiswa lain.'];
+            }
+        }
+
+        // Bersihkan username sosial media (buang karakter @ di depan jika ada)
+        $cleanIg = ltrim(trim($instagram), '@');
+        $cleanTg = ltrim(trim($telegram), '@');
+
+        try {
+            if ($waChanged) {
+                // Buat 6-digit OTP baru dan reset tanggal verifikasi
+                $newOtp = sprintf('%06d', mt_rand(100000, 999999));
+
+                $stmt = $this->db->prepare("UPDATE users 
+                                            SET whatsapp = :wa, 
+                                                phone = :phone, 
+                                                whatsapp_otp = :otp,
+                                                whatsapp_verified_at = NULL,
+                                                instagram = :ig, 
+                                                telegram = :tg,
+                                                updated_at = NOW()
+                                            WHERE id = :id");
+                $stmt->execute([
+                    'wa'    => $cleanWa,
+                    'phone' => $cleanWa,
+                    'otp'   => $newOtp,
+                    'ig'    => $cleanIg ?: null,
+                    'tg'    => $cleanTg ?: null,
+                    'id'    => $userId
+                ]);
+
+                // Perbarui sesi aktif user (status WA menjadi unverified)
+                if (isset($_SESSION['user']) && $_SESSION['user']['id'] == $userId) {
+                    $_SESSION['user']['whatsapp'] = $cleanWa;
+                    $_SESSION['user']['whatsapp_verified_at'] = null;
+                }
+
+                return [
+                    'success'    => true,
+                    'wa_changed' => true,
+                    'new_wa'     => $cleanWa,
+                    'otp'        => $newOtp
+                ];
+            } else {
+                // Nomor WA tidak berubah: hanya perbarui sosmed
+                $stmt = $this->db->prepare("UPDATE users 
+                                            SET instagram = :ig, 
+                                                telegram = :tg,
+                                                updated_at = NOW()
+                                            WHERE id = :id");
+                $stmt->execute([
+                    'ig' => $cleanIg ?: null,
+                    'tg' => $cleanTg ?: null,
+                    'id' => $userId
+                ]);
+
+                return [
+                    'success'    => true,
+                    'wa_changed' => false
+                ];
+            }
+        } catch (PDOException $e) {
+            return ['success' => false, 'error' => 'Gagal memperbarui profil: ' . $e->getMessage()];
+        }
+    }
+
+    /**
+     * Membuat ulang (resend) kode OTP WhatsApp baru
+     */
+    public function resendWhatsAppOtp(int $userId): array
+    {
+        $newOtp = sprintf('%06d', mt_rand(100000, 999999));
+        try {
+            $stmt = $this->db->prepare("UPDATE users 
+                                        SET whatsapp_otp = :otp, 
+                                            whatsapp_verified_at = NULL,
+                                            updated_at = NOW() 
+                                        WHERE id = :id");
+            $stmt->execute([
+                'otp' => $newOtp,
+                'id'  => $userId
+            ]);
+
+            return ['success' => true, 'otp' => $newOtp];
+        } catch (PDOException $e) {
+            return ['success' => false, 'error' => 'Gagal mengirim ulang OTP: ' . $e->getMessage()];
+        }
     }
 
     /**
