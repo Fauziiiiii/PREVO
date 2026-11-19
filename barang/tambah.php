@@ -91,7 +91,7 @@ require_once __DIR__ . '/../views/partials/header.php';
             </div>
         <?php endif; ?>
 
-        <form action="<?= BASE_URL ?>/barang/tambah.php" method="POST" enctype="multipart/form-data" class="space-y-4">
+        <form id="formTambahBarang" action="<?= BASE_URL ?>/barang/tambah.php" method="POST" enctype="multipart/form-data" class="space-y-4">
             <?= csrf_field() ?>
 
             <!-- Judul Barang -->
@@ -180,7 +180,7 @@ require_once __DIR__ . '/../views/partials/header.php';
                    class="flex-1 py-3 border border-slate-300 text-slate-700 font-bold text-center text-sm rounded-xl hover:bg-slate-50 transition-colors">
                     Batal
                 </a>
-                <button type="submit" 
+                <button type="button" onclick="openConfirmModal()"
                         class="flex-2 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm rounded-xl shadow-md transition-all">
                     Pasang Iklan Sekarang
                 </button>
@@ -190,18 +190,160 @@ require_once __DIR__ . '/../views/partials/header.php';
     </div>
 </div>
 
+<!-- Modal Konfirmasi Pasang Iklan -->
+<div id="confirmModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <!-- Header Modal -->
+        <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="text-lg">📦</span>
+                <h3 class="font-bold text-sm">Konfirmasi Pasang Iklan Barang</h3>
+            </div>
+            <button type="button" onclick="closeConfirmModal()" class="text-slate-400 hover:text-white text-xl leading-none">&times;</button>
+        </div>
+
+        <!-- Isi Modal / Ringkasan Data -->
+        <div class="p-6 space-y-4">
+            <p class="text-xs text-slate-500 leading-relaxed">
+                Mohon tinjau kembali ringkasan informasi barang sebelum dikirimkan ke tim kurasi PREVO Polinema.
+            </p>
+
+            <!-- Kartu Ringkasan -->
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                <div class="flex items-start gap-3.5">
+                    <div id="modalPhotoThumb" class="w-16 h-16 rounded-xl bg-slate-200 border border-slate-300 overflow-hidden shrink-0 flex items-center justify-center text-slate-400 text-xl font-bold">
+                        📦
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 id="modalTitle" class="font-bold text-slate-900 text-sm truncate"></h4>
+                        <div id="modalPrice" class="font-extrabold text-emerald-700 text-base mt-0.5"></div>
+                        <div class="flex flex-wrap items-center gap-1.5 mt-1.5 text-[11px]">
+                            <span id="modalCategory" class="px-2 py-0.5 rounded-md bg-slate-200 text-slate-700 font-medium"></span>
+                            <span id="modalCondition" class="px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 font-medium"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-2.5 border-t border-slate-200 text-xs space-y-1">
+                    <div class="flex items-start gap-1.5 text-slate-600">
+                        <span class="text-slate-400 shrink-0">📍 Titik COD:</span>
+                        <span id="modalLocation" class="font-semibold text-slate-800"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notice Moderasi Kampus -->
+            <div class="p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-amber-950 text-xs leading-relaxed flex items-start gap-2.5">
+                <span class="text-base shrink-0 mt-0.5">🛡️</span>
+                <div>
+                    <strong class="font-bold text-amber-950 block mb-0.5">Ketentuan Kurasi & Keamanan Kampus:</strong>
+                    <p class="text-[11px] text-amber-900/90 leading-relaxed">
+                        Listing baru akan berstatus <strong>Menunggu Persetujuan</strong> dan ditinjau oleh Admin untuk memastikan kepatuhan tata tertib kampus sebelum tampil di katalog publik.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Tombol Aksi Modal -->
+            <div class="flex items-center justify-end gap-3 pt-2">
+                <button type="button" onclick="closeConfirmModal()" 
+                        class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-50 transition-colors">
+                    Periksa Kembali
+                </button>
+                <button type="button" id="btnSubmitItem" onclick="submitItemForm()" 
+                        class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-1.5">
+                    <span>✓ Ya, Pasang Iklan Sekarang</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+let uploadedImageDataUrl = null;
+
 function previewImage(event) {
     const input = event.target;
     if (input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = function(e) {
-            document.getElementById('imagePreview').src = e.target.result;
+            uploadedImageDataUrl = e.target.result;
+            document.getElementById('imagePreview').src = uploadedImageDataUrl;
             document.getElementById('imagePreviewContainer').classList.remove('hidden');
         };
         reader.readAsDataURL(input.files[0]);
+    } else {
+        uploadedImageDataUrl = null;
+        document.getElementById('imagePreviewContainer').classList.add('hidden');
     }
 }
+
+function openConfirmModal() {
+    const form = document.getElementById('formTambahBarang');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    // Ambil nilai dari input formulir
+    const title = form.elements['title'].value.trim();
+    const catSelect = form.elements['category_id'];
+    const category = catSelect.options[catSelect.selectedIndex]?.text.trim() || '-';
+    
+    const condSelect = form.elements['condition'];
+    const condition = condSelect.options[condSelect.selectedIndex]?.text.trim() || '-';
+
+    const priceVal = parseFloat(form.elements['price'].value) || 0;
+    const formattedPrice = new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        maximumFractionDigits: 0
+    }).format(priceVal);
+
+    const codLocSelect = form.elements['cod_location'];
+    const codLoc = codLocSelect.options[codLocSelect.selectedIndex]?.text.replace('📍', '').trim() || '-';
+    const codNote = form.elements['cod_note'] ? form.elements['cod_note'].value.trim() : '';
+    const fullLoc = codNote ? `${codLoc} — ${codNote}` : codLoc;
+
+    // Masukkan ke dalam elemen modal
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalPrice').textContent = formattedPrice;
+    document.getElementById('modalCategory').textContent = category;
+    document.getElementById('modalCondition').textContent = condition;
+    document.getElementById('modalLocation').textContent = fullLoc;
+
+    // Foto thumbnail di modal
+    const thumbContainer = document.getElementById('modalPhotoThumb');
+    if (uploadedImageDataUrl) {
+        thumbContainer.innerHTML = `<img src="${uploadedImageDataUrl}" alt="Thumbnail" class="w-full h-full object-cover">`;
+    } else {
+        thumbContainer.innerHTML = `<span class="text-2xl">📦</span>`;
+    }
+
+    document.getElementById('confirmModal').classList.remove('hidden');
+}
+
+function closeConfirmModal() {
+    document.getElementById('confirmModal').classList.add('hidden');
+}
+
+function submitItemForm() {
+    const btn = document.getElementById('btnSubmitItem');
+    btn.disabled = true;
+    btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;
+    document.getElementById('formTambahBarang').submit();
+}
+
+// Tutup modal jika klik area luar backdrop atau tekan tombol Escape
+document.getElementById('confirmModal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeConfirmModal();
+    }
+});
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeConfirmModal();
+    }
+});
 </script>
 
 <?php require_once __DIR__ . '/../views/partials/footer.php'; ?>

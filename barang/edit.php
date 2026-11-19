@@ -106,7 +106,7 @@ require_once __DIR__ . '/../views/partials/header.php';
             </div>
         <?php endif; ?>
 
-        <form action="<?= BASE_URL ?>/barang/edit.php?id=<?= (int)$itemId ?>" method="POST" enctype="multipart/form-data" class="space-y-4">
+        <form id="formEditBarang" action="<?= BASE_URL ?>/barang/edit.php?id=<?= (int)$itemId ?>" method="POST" enctype="multipart/form-data" class="space-y-4">
             <?= csrf_field() ?>
 
             <!-- Judul Barang -->
@@ -188,12 +188,17 @@ require_once __DIR__ . '/../views/partials/header.php';
                         <div class="w-20 h-16 rounded-lg overflow-hidden border border-slate-200 shrink-0">
                             <img src="<?= $photoSrc ?>" alt="Current" class="w-full h-full object-cover">
                         </div>
-                        <span class="text-xs text-slate-500">Foto saat ini. Pilih file baru di bawah untuk mengganti.</span>
+                        <span class="text-xs text-slate-500">Foto saat ini. Pilih file baru di bawah jika ingin mengganti.</span>
                     </div>
                 <?php endif; ?>
 
-                <input type="file" name="photo" accept="image/jpeg,image/png,image/webp"
+                <input type="file" name="photo" id="photoInputEdit" accept="image/jpeg,image/png,image/webp" onchange="previewImageEdit(event)"
                        class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200">
+                
+                <!-- Preview Foto Baru yang Dipilih -->
+                <div id="imagePreviewContainerEdit" class="hidden mt-3 w-40 h-32 rounded-xl overflow-hidden border border-slate-200">
+                    <img id="imagePreviewEdit" src="#" alt="Preview Foto Baru" class="w-full h-full object-cover">
+                </div>
             </div>
 
             <!-- Deskripsi Lengkap -->
@@ -208,7 +213,7 @@ require_once __DIR__ . '/../views/partials/header.php';
                    class="flex-1 py-3 border border-slate-300 text-slate-700 font-bold text-center text-sm rounded-xl hover:bg-slate-50 transition-colors">
                     Batal
                 </a>
-                <button type="submit" 
+                <button type="button" onclick="openConfirmEditModal()" 
                         class="flex-2 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl shadow-md transition-all">
                     Simpan Perubahan
                 </button>
@@ -217,5 +222,160 @@ require_once __DIR__ . '/../views/partials/header.php';
 
     </div>
 </div>
+
+<!-- Modal Konfirmasi Edit Barang -->
+<div id="confirmEditModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <!-- Header Modal -->
+        <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="text-lg">✏️</span>
+                <h3 class="font-bold text-sm">Konfirmasi Perubahan Iklan Barang</h3>
+            </div>
+            <button type="button" onclick="closeConfirmEditModal()" class="text-slate-400 hover:text-white text-xl leading-none">&times;</button>
+        </div>
+
+        <!-- Isi Modal / Ringkasan Data -->
+        <div class="p-6 space-y-4">
+            <p class="text-xs text-slate-500 leading-relaxed">
+                Pastikan seluruh pembaruan data barang sudah tepat sebelum disimpan.
+            </p>
+
+            <!-- Kartu Ringkasan -->
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                <div class="flex items-start gap-3.5">
+                    <div id="modalEditPhotoThumb" class="w-16 h-16 rounded-xl bg-slate-200 border border-slate-300 overflow-hidden shrink-0 flex items-center justify-center text-slate-400 text-xl font-bold">
+                        📦
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 id="modalEditTitle" class="font-bold text-slate-900 text-sm truncate"></h4>
+                        <div id="modalEditPrice" class="font-extrabold text-emerald-700 text-base mt-0.5"></div>
+                        <div class="flex flex-wrap items-center gap-1.5 mt-1.5 text-[11px]">
+                            <span id="modalEditCategory" class="px-2 py-0.5 rounded-md bg-slate-200 text-slate-700 font-medium"></span>
+                            <span id="modalEditCondition" class="px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 font-medium"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-2.5 border-t border-slate-200 text-xs space-y-1">
+                    <div class="flex items-start gap-1.5 text-slate-600">
+                        <span class="text-slate-400 shrink-0">📍 Titik COD:</span>
+                        <span id="modalEditLocation" class="font-semibold text-slate-800"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notice Peninjauan Ulang Moderasi -->
+            <div class="p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-amber-950 text-xs leading-relaxed flex items-start gap-2.5">
+                <span class="text-base shrink-0 mt-0.5">⚠️</span>
+                <div>
+                    <strong class="font-bold text-amber-950 block mb-0.5">Pemberitahuan Status Moderasi:</strong>
+                    <p class="text-[11px] text-amber-900/90 leading-relaxed">
+                        Menyimpan perubahan formulir ini akan memperbarui status barang menjadi <strong>Menunggu Persetujuan</strong> untuk ditinjau ulang oleh Admin sebelum ditampilkan kembali ke katalog umum.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Tombol Aksi Modal -->
+            <div class="flex items-center justify-end gap-3 pt-2">
+                <button type="button" onclick="closeConfirmEditModal()" 
+                        class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-50 transition-colors">
+                    Periksa Kembali
+                </button>
+                <button type="button" id="btnSubmitEditItem" onclick="submitEditItemForm()" 
+                        class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-1.5">
+                    <span>✓ Ya, Simpan Perubahan</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let newUploadedImageDataUrl = null;
+const existingPhotoSrc = <?= json_encode($photoSrc) ?>;
+
+function previewImageEdit(event) {
+    const input = event.target;
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            newUploadedImageDataUrl = e.target.result;
+            document.getElementById('imagePreviewEdit').src = newUploadedImageDataUrl;
+            document.getElementById('imagePreviewContainerEdit').classList.remove('hidden');
+        };
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        newUploadedImageDataUrl = null;
+        document.getElementById('imagePreviewContainerEdit').classList.add('hidden');
+    }
+}
+
+function openConfirmEditModal() {
+    const form = document.getElementById('formEditBarang');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    const title = form.elements['title'].value.trim();
+    const catSelect = form.elements['category_id'];
+    const category = catSelect.options[catSelect.selectedIndex]?.text.trim() || '-';
+    
+    const condSelect = form.elements['condition'];
+    const condition = condSelect.options[condSelect.selectedIndex]?.text.trim() || '-';
+
+    const priceVal = parseFloat(form.elements['price'].value) || 0;
+    const formattedPrice = new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        maximumFractionDigits: 0
+    }).format(priceVal);
+
+    const codLocSelect = form.elements['cod_location'];
+    const codLoc = codLocSelect.options[codLocSelect.selectedIndex]?.text.replace('📍', '').trim() || '-';
+    const codNote = form.elements['cod_note'] ? form.elements['cod_note'].value.trim() : '';
+    const fullLoc = codNote ? `${codLoc} — ${codNote}` : codLoc;
+
+    document.getElementById('modalEditTitle').textContent = title;
+    document.getElementById('modalEditPrice').textContent = formattedPrice;
+    document.getElementById('modalEditCategory').textContent = category;
+    document.getElementById('modalEditCondition').textContent = condition;
+    document.getElementById('modalEditLocation').textContent = fullLoc;
+
+    const thumbContainer = document.getElementById('modalEditPhotoThumb');
+    if (newUploadedImageDataUrl) {
+        thumbContainer.innerHTML = `<img src="${newUploadedImageDataUrl}" alt="Thumbnail" class="w-full h-full object-cover">`;
+    } else if (existingPhotoSrc) {
+        thumbContainer.innerHTML = `<img src="${existingPhotoSrc}" alt="Thumbnail" class="w-full h-full object-cover">`;
+    } else {
+        thumbContainer.innerHTML = `<span class="text-2xl">📦</span>`;
+    }
+
+    document.getElementById('confirmEditModal').classList.remove('hidden');
+}
+
+function closeConfirmEditModal() {
+    document.getElementById('confirmEditModal').classList.add('hidden');
+}
+
+function submitEditItemForm() {
+    const btn = document.getElementById('btnSubmitEditItem');
+    btn.disabled = true;
+    btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Menyimpan...`;
+    document.getElementById('formEditBarang').submit();
+}
+
+document.getElementById('confirmEditModal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeConfirmEditModal();
+    }
+});
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeConfirmEditModal();
+    }
+});
+</script>
 
 <?php require_once __DIR__ . '/../views/partials/footer.php'; ?>
