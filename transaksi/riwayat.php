@@ -84,9 +84,7 @@ include __DIR__ . '/../views/partials/header.php';
                             <!-- Item Image -->
                             <div class="w-full md:w-36 h-36 shrink-0 rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
                                 <?php 
-                                    $imgFile = $tx['item_image'] ?: 'default.jpg';
-                                    $hasImg = file_exists(ROOT_PATH . '/uploads/items/' . $imgFile);
-                                    $imgUrl = $hasImg ? asset_url('uploads/items/' . $imgFile) : asset_url('uploads/items/default.jpg');
+                                    $imgUrl = item_image_url($tx['item_image']);
                                 ?>
                                 <img src="<?= $imgUrl ?>" 
                                      alt="<?= e($tx['item_title']) ?>" 
@@ -296,9 +294,7 @@ include __DIR__ . '/../views/partials/header.php';
                             <!-- Item Image -->
                             <div class="w-full md:w-36 h-36 shrink-0 rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
                                 <?php 
-                                    $imgFile = $tx['item_image'] ?: 'default.jpg';
-                                    $hasImg = file_exists(ROOT_PATH . '/uploads/items/' . $imgFile);
-                                    $imgUrl = $hasImg ? asset_url('uploads/items/' . $imgFile) : asset_url('uploads/items/default.jpg');
+                                    $imgUrl = item_image_url($tx['item_image']);
                                 ?>
                                 <img src="<?= $imgUrl ?>" 
                                      alt="<?= e($tx['item_title']) ?>" 
